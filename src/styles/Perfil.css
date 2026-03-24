@@ -1,0 +1,266 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+@import './variables.css';
+
+/* =====================================================
+   PERFIL — compartido Admin y SuperAdmin
+   ===================================================== */
+
+.perfil-container {
+  display: flex;
+  height: 100vh;
+  font-family: var(--font-sans);
+  background: var(--gray-50);
+  overflow: hidden;
+}
+
+.perfil-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* ── Header ── */
+.perfil-header {
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-200);
+  padding: 20px 36px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.perfil-header-back {
+  width: 34px; height: 34px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--gray-100); border: none; border-radius: var(--radius-sm);
+  cursor: pointer; color: var(--gray-500); transition: all var(--transition);
+}
+.perfil-header-back:hover { background: var(--gray-200); color: var(--gray-700); }
+.perfil-header h1 {
+  font-size: 1.15rem; font-weight: 700;
+  color: var(--gray-800); margin: 0;
+}
+
+/* ── Contenido ── */
+.perfil-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px 36px;
+}
+.perfil-content::-webkit-scrollbar { width: 6px; }
+.perfil-content::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 6px; }
+
+/* ── Layout dos columnas ── */
+.perfil-grid {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 24px;
+  max-width: 900px;
+}
+
+/* ── Card base ── */
+.perfil-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+/* ── Card avatar ── */
+.perfil-avatar-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 24px 24px;
+  text-align: center;
+}
+.perfil-avatar-ring {
+  position: relative;
+  margin-bottom: 16px;
+}
+.perfil-avatar-img {
+  width: 100px; height: 100px;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  border: 3px solid var(--blue-200);
+  box-shadow: 0 0 0 5px var(--blue-50);
+  display: block;
+}
+.perfil-avatar-placeholder {
+  width: 100px; height: 100px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--blue-100), var(--blue-200));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.2rem; font-weight: 700;
+  color: var(--blue-600);
+  border: 3px solid var(--blue-200);
+  box-shadow: 0 0 0 5px var(--blue-50);
+}
+.perfil-nombre {
+  font-size: 1.05rem; font-weight: 700;
+  color: var(--gray-800); margin: 0 0 4px;
+}
+.perfil-email {
+  font-size: 0.8rem; color: var(--gray-400); margin: 0 0 12px;
+}
+.perfil-rol-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 14px; border-radius: var(--radius-full);
+  font-size: 0.75rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .5px;
+}
+.perfil-rol-admin {
+  background: var(--blue-50); color: var(--blue-700);
+  border: 1px solid var(--blue-100);
+}
+.perfil-rol-superadmin {
+  background: #faf5ff; color: #7c3aed;
+  border: 1px solid #ddd6fe;
+}
+.perfil-rol-badge::before {
+  content: ''; width: 6px; height: 6px;
+  border-radius: 50%; background: currentColor;
+}
+
+/* ── Info card ── */
+.perfil-info-list {
+  padding: 0 24px 20px;
+  display: flex; flex-direction: column;
+}
+.perfil-info-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--gray-100);
+}
+.perfil-info-item:last-child { border-bottom: none; }
+.perfil-info-icon {
+  width: 34px; height: 34px;
+  border-radius: var(--radius-sm);
+  background: var(--blue-50);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--blue-500); flex-shrink: 0;
+}
+.perfil-info-label {
+  font-size: 0.72rem; font-weight: 600;
+  color: var(--gray-400); text-transform: uppercase;
+  letter-spacing: .5px; display: block; margin-bottom: 2px;
+}
+.perfil-info-value {
+  font-size: 0.875rem; font-weight: 500;
+  color: var(--gray-800); display: block;
+}
+
+/* ── Sección de formulario ── */
+.perfil-section-title {
+  padding: 18px 24px 14px;
+  border-bottom: 1px solid var(--gray-100);
+  display: flex; align-items: center; gap: 10px;
+}
+.perfil-section-title h2 {
+  font-size: 0.9rem; font-weight: 700;
+  color: var(--gray-700); margin: 0;
+}
+.perfil-section-title svg { color: var(--gray-400); }
+
+.perfil-form {
+  padding: 20px 24px;
+  display: flex; flex-direction: column; gap: 16px;
+}
+
+.perfil-field label {
+  display: block;
+  font-size: 0.75rem; font-weight: 600;
+  color: var(--gray-600); text-transform: uppercase;
+  letter-spacing: .4px; margin-bottom: 6px;
+}
+.perfil-field label span {
+  font-weight: 400; text-transform: none; color: var(--gray-400);
+}
+.perfil-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem; font-family: var(--font-sans);
+  color: var(--gray-800); background: var(--white);
+  outline: none; box-sizing: border-box;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.perfil-input:focus {
+  border-color: var(--blue-400);
+  box-shadow: 0 0 0 3px rgba(59,130,246,.1);
+}
+.perfil-input::placeholder { color: var(--gray-300); }
+.perfil-input:read-only {
+  background: var(--gray-50); color: var(--gray-400); cursor: not-allowed;
+}
+
+/* ── Divisor entre secciones ── */
+.perfil-divider {
+  height: 1px; background: var(--gray-100);
+  margin: 4px 0;
+}
+
+/* ── Acciones ── */
+.perfil-form-footer {
+  padding: 14px 24px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 10px;
+  border-top: 1px solid var(--gray-100);
+  background: var(--gray-50);
+}
+.perfil-btn-guardar {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: var(--blue-600); color: var(--white); border: none;
+  padding: 10px 22px; border-radius: var(--radius-sm);
+  font-size: 0.875rem; font-weight: 600; cursor: pointer;
+  font-family: var(--font-sans); transition: all var(--transition);
+  box-shadow: 0 2px 8px rgba(37,99,235,.2);
+}
+.perfil-btn-guardar:hover { background: var(--blue-700); }
+.perfil-btn-guardar:disabled { opacity: .5; cursor: not-allowed; }
+
+/* ── Toast / feedback inline ── */
+.perfil-toast {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 14px; border-radius: var(--radius-sm);
+  font-size: 0.82rem; font-weight: 500;
+  animation: toastIn .2s ease;
+}
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.perfil-toast-success {
+  background: var(--green-50); color: var(--green-600);
+  border: 1px solid rgba(22,163,74,.2);
+}
+.perfil-toast-error {
+  background: var(--red-50); color: var(--red-600);
+  border: 1px solid rgba(220,38,38,.15);
+}
+
+/* ── Estatus chip ── */
+.perfil-estatus {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; border-radius: var(--radius-full);
+  font-size: 0.76rem; font-weight: 600;
+}
+.perfil-estatus-activo {
+  background: var(--green-100); color: var(--green-600);
+  border: 1px solid rgba(22,163,74,.2);
+}
+.perfil-estatus-activo::before {
+  content: ''; width: 6px; height: 6px;
+  background: var(--green-500); border-radius: 50%;
+}
+
+/* ── Responsive ── */
+@media (max-width: 860px) {
+  .perfil-grid { grid-template-columns: 1fr; }
+  .perfil-content { padding: 20px 16px; }
+  .perfil-header { padding: 14px 16px; }
+}

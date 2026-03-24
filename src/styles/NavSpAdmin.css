@@ -1,0 +1,249 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+@import './variables.css';
+
+/* =====================================================
+   SIDEBAR — NavSpAdmin
+   ===================================================== */
+
+.spadmin-container {
+  display: flex;
+  height: 100vh;
+  font-family: var(--font-sans);
+  background: var(--gray-100);
+}
+
+.spadmin-main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Sidebar ── */
+.spadmin-sidebar {
+  width: var(--sidebar-width);
+  min-width: var(--sidebar-width);
+  background: linear-gradient(180deg, var(--blue-900) 0%, var(--blue-800) 100%);
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  transition: width 0.3s cubic-bezier(.4,0,.2,1),
+              min-width 0.3s cubic-bezier(.4,0,.2,1);
+  position: relative;
+  z-index: 100;
+  box-shadow: 4px 0 20px rgba(0,0,0,.18);
+  font-family: var(--font-sans);
+  overflow: hidden;
+}
+.spadmin-sidebar.collapsed {
+  width: var(--sidebar-collapsed-width);
+  min-width: var(--sidebar-collapsed-width);
+}
+
+/* ── Colapsar ── */
+.spadmin-collapse-btn {
+  position: absolute;
+  top: 20px;
+  right: -13px;
+  width: 26px;
+  height: 26px;
+  background: var(--blue-500);
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white);
+  cursor: pointer;
+  border: 2px solid var(--white);
+  box-shadow: var(--shadow-md);
+  transition: background var(--transition), transform var(--transition);
+  z-index: 200;
+}
+.spadmin-collapse-btn:hover {
+  background: var(--blue-400);
+  transform: scale(1.1);
+}
+
+/* ── Brand ── */
+.spadmin-brand {
+  padding: 28px 20px 20px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.spadmin-brand-icon {
+  width: 36px; height: 36px;
+  background: var(--blue-500);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: white;
+}
+.spadmin-brand-text {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: .3px;
+  opacity: 1;
+  transition: opacity 0.2s;
+}
+.spadmin-sidebar.collapsed .spadmin-brand-text { opacity: 0; width: 0; }
+
+/* ── Perfil ── */
+.spadmin-profile-section {
+  padding: 24px 16px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.spadmin-profile-wrapper { position: relative; margin-bottom: 10px; }
+.spadmin-profile-img {
+  width: 68px; height: 68px;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  border: 3px solid var(--blue-400);
+  box-shadow: 0 0 0 4px rgba(59,130,246,.2);
+  transition: width .3s, height .3s;
+}
+.spadmin-sidebar.collapsed .spadmin-profile-img { width: 40px; height: 40px; }
+
+.spadmin-edit-profile-btn {
+  position: absolute;
+  bottom: -4px; right: -4px;
+  width: 24px; height: 24px;
+  background: var(--blue-400);
+  border: 2px solid var(--blue-900);
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background var(--transition);
+  color: white;
+  padding: 0;
+}
+.spadmin-edit-profile-btn:hover { background: var(--blue-300); }
+.spadmin-edit-icon { width: 11px; height: 11px; stroke: white; stroke-width: 2.5; }
+
+/* ── Menú ── */
+.spadmin-menu {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 10px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.spadmin-menu::-webkit-scrollbar { width: 4px; }
+.spadmin-menu::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 4px; }
+
+.spadmin-menu button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: transparent;
+  color: rgba(255,255,255,.72);
+  border: none;
+  padding: 11px 14px;
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+  width: 100%;
+  font-family: var(--font-sans);
+  text-align: left;
+}
+.spadmin-menu button:hover {
+  background: rgba(255,255,255,.08);
+  color: var(--white);
+  transform: translateX(2px);
+}
+.spadmin-menu button.active {
+  background: var(--blue-500);
+  color: var(--white);
+  box-shadow: 0 4px 12px rgba(37,99,235,.4);
+}
+.spadmin-menu button svg { flex-shrink: 0; opacity: .85; }
+
+.spadmin-sidebar.collapsed .spadmin-menu button {
+  justify-content: center;
+  padding: 12px;
+}
+.spadmin-sidebar.collapsed .spadmin-menu button span { display: none; }
+
+/* ── Logout ── */
+.spadmin-logout { padding: 10px 10px 20px; border-top: 1px solid rgba(255,255,255,.08); }
+.spadmin-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(239,68,68,.15);
+  color: #fca5a5;
+  border: 1px solid rgba(239,68,68,.25);
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition);
+  font-size: 0.84rem;
+  font-weight: 500;
+  width: 100%;
+  white-space: nowrap;
+  font-family: var(--font-sans);
+}
+.spadmin-logout-btn:hover {
+  background: rgba(239,68,68,.28);
+  color: #fecaca;
+}
+.spadmin-sidebar.collapsed .spadmin-logout-btn { justify-content: center; padding: 12px; }
+.spadmin-sidebar.collapsed .spadmin-logout-btn span { display: none; }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .spadmin-sidebar {
+    position: fixed; left: 0; top: 0; bottom: 0;
+    transform: translateX(0);
+    z-index: 300;
+  }
+  .spadmin-sidebar.collapsed {
+    transform: translateX(calc(-1 * var(--sidebar-collapsed-width)));
+  }
+}
+/* ── Theme Toggle en sidebar ── */
+.nav-theme-toggle {
+  padding: 0 12px 8px;
+  display: flex;
+  justify-content: center;
+}
+
+.nav-theme-toggle .theme-toggle {
+  width: 100%;
+  justify-content: center;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.7);
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 0.78rem;
+  gap: 6px;
+}
+
+.nav-theme-toggle .theme-toggle:hover {
+  background: rgba(255,255,255,0.13);
+  border-color: rgba(255,255,255,0.25);
+}
+
+.nav-theme-toggle .theme-toggle__label {
+  color: rgba(255,255,255,0.7);
+  font-size: 0.78rem;
+}

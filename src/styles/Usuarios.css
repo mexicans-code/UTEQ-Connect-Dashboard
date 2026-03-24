@@ -1,0 +1,324 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+@import './variables.css';
+
+/* =====================================================
+   USUARIOS
+   ===================================================== */
+
+.usuarios-container {
+  display: flex;
+  height: 100vh;
+  font-family: var(--font-sans);
+  background: var(--gray-100);
+  overflow: hidden;
+}
+
+.usuarios-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* ── Header ── */
+.usuarios-header {
+  background: linear-gradient(135deg, var(--blue-700) 0%, var(--blue-800) 100%);
+  padding: 18px 32px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,.12);
+}
+.usuarios-header h1 {
+  color: var(--white);
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0;
+}
+.usuarios-header p {
+  color: rgba(255,255,255,.5);
+  font-size: 0.8rem;
+  margin: 4px 0 0;
+}
+
+/* ── Contenido ── */
+.usuarios-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 32px;
+}
+.usuarios-content::-webkit-scrollbar { width: 6px; }
+.usuarios-content::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 6px; }
+
+/* ── Acciones top ── */
+.usuarios-actions-top {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.btn-agregarS {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--blue-600);
+  color: var(--white);
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  box-shadow: 0 2px 8px rgba(37,99,235,.3);
+  font-family: var(--font-sans);
+}
+.btn-agregarS:hover {
+  background: var(--blue-700);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(37,99,235,.4);
+}
+
+/* ── Tabla ── */
+.usuarios-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+}
+
+.usuarios-table thead {
+  background: var(--blue-50);
+  border-bottom: 2px solid var(--blue-200);
+}
+
+.usuarios-table th {
+  padding: 13px 16px;
+  text-align: left;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .6px;
+  color: var(--blue-700);
+  white-space: nowrap;
+}
+
+.usuarios-table td {
+  padding: 13px 16px;
+  font-size: 0.88rem;
+  color: var(--gray-700);
+  border-bottom: 1px solid var(--gray-100);
+  vertical-align: middle;
+}
+
+.usuarios-table tbody tr {
+  transition: background var(--transition);
+}
+.usuarios-table tbody tr:hover {
+  background: var(--blue-50);
+}
+.usuarios-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ── Badges de rol ── */
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+}
+.badge-red   { background: var(--red-100);    color: var(--red-700);    border: 1px solid rgba(185,28,28,.2); }
+.badge-blue  { background: var(--blue-100);   color: var(--blue-700);   border: 1px solid rgba(29,78,216,.2); }
+.badge-gray  { background: var(--gray-100);   color: var(--gray-600);   border: 1px solid var(--gray-200); }
+
+/* ── Estatus ── */
+.estatus-activo {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--green-100);
+  color: var(--green-600);
+  border: 1px solid rgba(22,163,74,.2);
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.estatus-activo::before {
+  content: ''; width: 6px; height: 6px;
+  background: var(--green-500); border-radius: 50%;
+}
+.estatus-inactivo {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--red-100);
+  color: var(--red-600);
+  border: 1px solid rgba(220,38,38,.2);
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.estatus-inactivo::before {
+  content: ''; width: 6px; height: 6px;
+  background: var(--red-500); border-radius: 50%;
+}
+
+/* ── Acciones ── */
+.acciones {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-icon {
+  width: 32px; height: 32px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: none; border-radius: var(--radius-sm);
+  cursor: pointer; transition: all var(--transition);
+  background: var(--gray-100); color: var(--gray-500);
+}
+.btn-icon:hover { background: var(--blue-100); color: var(--blue-700); transform: translateY(-1px); }
+.btn-icon.delete:hover  { background: var(--red-100);    color: var(--red-600);    }
+.btn-icon.toggle:hover  { background: var(--yellow-100); color: var(--yellow-600); }
+.btn-icon.success:hover { background: var(--green-100);  color: var(--green-600);  }
+
+/* ✅ FIX: íconos Lucide heredan el color del botón padre */
+.btn-icon svg {
+  display: block;
+  stroke: currentColor;
+  fill: none;
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+/* ── Modal ── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(15,23,42,.5);
+  backdrop-filter: blur(4px);
+  display: flex; justify-content: center; align-items: center;
+  z-index: 1000;
+  animation: overlayIn .15s ease;
+}
+@keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
+
+.modal-container {
+  background: var(--white);
+  width: 440px; max-width: 95vw;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+  animation: modalUp .2s ease;
+}
+@keyframes modalUp {
+  from { opacity: 0; transform: translateY(16px) scale(.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-header {
+  background: linear-gradient(135deg, var(--blue-700), var(--blue-800));
+  padding: 18px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-header h2 {
+  color: var(--white);
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0;
+}
+.modal-header button {
+  background: rgba(255,255,255,.15);
+  border: none;
+  color: white;
+  width: 30px; height: 30px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background var(--transition);
+}
+.modal-header button:hover { background: rgba(255,255,255,.28); }
+
+.modal-body {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.modal-body input,
+.modal-body select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-family: var(--font-sans);
+  color: var(--gray-800);
+  background: var(--white);
+  transition: border-color var(--transition), box-shadow var(--transition);
+  box-sizing: border-box;
+}
+.modal-body input:focus,
+.modal-body select:focus {
+  outline: none;
+  border-color: var(--blue-400);
+  box-shadow: 0 0 0 3px rgba(59,130,246,.15);
+}
+
+.modal-footer {
+  padding: 14px 24px 18px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  background: var(--gray-50);
+  border-top: 1px solid var(--border);
+}
+
+.btn-cancelar {
+  background: var(--gray-100);
+  color: var(--gray-700);
+  border: 1.5px solid var(--border);
+  padding: 9px 18px;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: all var(--transition);
+}
+.btn-cancelar:hover { background: var(--gray-200); }
+
+.btn-guardar {
+  background: var(--blue-600);
+  color: var(--white);
+  border: none;
+  padding: 9px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: all var(--transition);
+}
+.btn-guardar:hover { background: var(--blue-700); }
+.btn-guardar:disabled { opacity: .55; cursor: not-allowed; }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .usuarios-content { padding: 16px; }
+  .usuarios-table { font-size: 0.82rem; }
+  .usuarios-table th, .usuarios-table td { padding: 10px 10px; }
+}
+@media (max-width: 480px) {
+  .modal-container { width: 96vw; }
+  .usuarios-header { padding: 14px 16px; }
+}

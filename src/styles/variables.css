@@ -1,0 +1,90 @@
+/* =====================================================
+   DESIGN TOKENS — importar en cada CSS o en index.css
+   ===================================================== */
+
+:root {
+  /* ── Paleta principal ── */
+  --blue-900: #0d1b3e;
+  --blue-800: #1a2f6b;
+  --blue-700: #1e3a8a;
+  --blue-600: #1d4ed8;
+  --blue-500: #2563eb;
+  --blue-400: #3b82f6;
+  --blue-300: #60a5fa;
+  --blue-200: #bfdbfe;
+  --blue-100: #dbeafe;
+  --blue-50:  #eff6ff;
+
+  /* ── Neutros ── */
+  --white:    #ffffff;
+  --gray-50:  #f8fafc;
+  --gray-100: #f1f5f9;
+  --gray-200: #e2e8f0;
+  --gray-300: #cbd5e1;
+  --gray-400: #94a3b8;
+  --gray-500: #64748b;
+  --gray-600: #475569;
+  --gray-700: #334155;
+  --gray-800: #1e293b;
+  --gray-900: #0f172a;
+
+  /* ── Estado: éxito ── */
+  --green-600: #16a34a;
+  --green-500: #22c55e;
+  --green-100: #dcfce7;
+  --green-50:  #f0fdf4;
+
+  /* ── Estado: advertencia ── */
+  --yellow-600: #ca8a04;
+  --yellow-500: #eab308;
+  --yellow-100: #fef9c3;
+  --yellow-50:  #fefce8;
+
+  /* ── Estado: error ── */
+  --red-700:  #b91c1c;
+  --red-600:  #dc2626;
+  --red-500:  #ef4444;
+  --red-100:  #fee2e2;
+  --red-50:   #fef2f2;
+
+  /* ── Estado: info / pendiente ── */
+  --orange-500: #f97316;
+  --orange-100: #ffedd5;
+
+  /* ── Sidebar ── */
+  --sidebar-width:          240px;
+  --sidebar-collapsed-width: 72px;
+  --sidebar-bg:             var(--blue-800);
+  --sidebar-active:         var(--blue-600);
+  --sidebar-hover:          var(--blue-700);
+  --sidebar-text:           #e2e8f0;
+
+  /* ── Topbar ── */
+  --topbar-bg:    var(--blue-700);
+  --topbar-color: var(--white);
+
+  /* ── Superficies ── */
+  --surface:       var(--white);
+  --surface-alt:   var(--gray-50);
+  --border:        var(--gray-200);
+  --border-focus:  var(--blue-400);
+
+  /* ── Sombras ── */
+  --shadow-sm:  0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+  --shadow-md:  0 4px 12px rgba(0,0,0,.10);
+  --shadow-lg:  0 10px 30px rgba(0,0,0,.12);
+  --shadow-xl:  0 20px 50px rgba(0,0,0,.15);
+
+  /* ── Radios ── */
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  16px;
+  --radius-xl:  22px;
+  --radius-full: 9999px;
+
+  /* ── Tipografía ── */
+  --font-sans: "Plus Jakarta Sans", "Poppins", sans-serif;
+
+  /* ── Transición ── */
+  --transition: 0.2s ease;
+}
