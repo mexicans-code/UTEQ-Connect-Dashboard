@@ -15,8 +15,8 @@ import { exportEventosPDF } from "../../utils/pdfExport";
 
 /* ═══════════ INTERFACES ═══════════ */
 
-interface Destino  { _id: string; nombre: string; }
-interface Espacio  { _id: string; nombre: string; planta: string; cupos: number; ocupado?: boolean; }
+interface Destino { _id: string; nombre: string; }
+interface Espacio { _id: string; nombre: string; planta: string; cupos: number; ocupado?: boolean; }
 
 interface Evento {
   _id: string;
@@ -236,30 +236,30 @@ const GestionEventos: React.FC = () => {
   const userIdActual = localStorage.getItem("userId") || "";
   const navigate = useNavigate();
 
-  const [eventos, setEventos]           = useState<Evento[]>([]);
-  const [destinos, setDestinos]         = useState<Destino[]>([]);
+  const [eventos, setEventos] = useState<Evento[]>([]);
+  const [destinos, setDestinos] = useState<Destino[]>([]);
   const [espaciosDestino, setEspaciosDestino] = useState<Espacio[]>([]);
   const [loadingEspacios, setLoadingEspacios] = useState(false);
-  const [loading, setLoading]           = useState(true);
-  const [error, setError]               = useState("");
-  const [busqueda, setBusqueda]         = useState("");
-  const [tabActivo, setTabActivo]       = useState<"mios" | "todos">("mios");
-  const [pagina, setPagina]             = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [busqueda, setBusqueda] = useState("");
+  const [tabActivo, setTabActivo] = useState<"mios" | "todos">("mios");
+  const [pagina, setPagina] = useState(1);
   const POR_PAGINA = 15;
 
   // Modal CRUD
-  const [showModal, setShowModal]       = useState(false);
-  const [modoEdicion, setModoEdicion]   = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [modoEdicion, setModoEdicion] = useState(false);
   const [eventoActual, setEventoActual] = useState<Evento | null>(null);
-  const [saving, setSaving]             = useState(false);
-  const [confirmOpen, setConfirmOpen]   = useState(false);
-  const [confirmMsg, setConfirmMsg]     = useState("");
-  const [confirmFn, setConfirmFn]       = useState<() => void>(() => () => {});
+  const [saving, setSaving] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmMsg, setConfirmMsg] = useState("");
+  const [confirmFn, setConfirmFn] = useState<() => void>(() => () => { });
   const confirmar = (msg: string, fn: () => void) => { setConfirmMsg(msg); setConfirmFn(() => fn); setConfirmOpen(true); };
-  const [uploadingImg, setUploadingImg]  = useState(false);
+  const [uploadingImg, setUploadingImg] = useState(false);
   const [imagenPendiente, setImagenPendiente] = useState<File | null>(null);
-  const [modalError, setModalError]     = useState("");
-  const [formData, setFormData]         = useState<FormData>(EMPTY_FORM);
+  const [modalError, setModalError] = useState("");
+  const [formData, setFormData] = useState<FormData>(EMPTY_FORM);
 
   /* ── Helpers de identidad ── */
   const esMio = (ev: Evento): boolean => {
@@ -293,7 +293,7 @@ const GestionEventos: React.FC = () => {
       const res = await api.get("/locations");
       const raw = res.data;
       setDestinos(Array.isArray(raw) ? raw : (raw.data ?? []));
-    } catch {}
+    } catch { }
   };
 
   const fetchEspaciosPorDestino = async (destinoId: string): Promise<Espacio[]> => {
@@ -315,7 +315,7 @@ const GestionEventos: React.FC = () => {
   useEffect(() => { fetchEventos(); fetchDestinos(); }, []);
 
   /* ── Listas filtradas ── */
-  const eventosMios   = useMemo(() => eventos.filter(esMio), [eventos, userIdActual]);
+  const eventosMios = useMemo(() => eventos.filter(esMio), [eventos, userIdActual]);
   const eventosGeneral = useMemo(() => eventos.filter(ev => !esMio(ev)), [eventos, userIdActual]);
 
   const listaActiva = tabActivo === "mios" ? eventosMios : eventosGeneral;
@@ -330,7 +330,7 @@ const GestionEventos: React.FC = () => {
     );
   }, [listaActiva, busqueda]);
 
-  const listaPagina = useMemo(() => listaFiltrada.slice((pagina-1)*POR_PAGINA, pagina*POR_PAGINA), [listaFiltrada, pagina]);
+  const listaPagina = useMemo(() => listaFiltrada.slice((pagina - 1) * POR_PAGINA, pagina * POR_PAGINA), [listaFiltrada, pagina]);
 
   /* ── Modal CRUD ── */
   const abrirAgregar = () => {
@@ -626,12 +626,12 @@ const GestionEventos: React.FC = () => {
                           </td>
                           <td style={{ fontSize: "0.84rem", color: "var(--gray-600)" }}>
                             {ev.descripcion ? (
-                                <span title={ev.descripcion}>
-                                  {ev.descripcion.length > 20
-                                    ? `${ev.descripcion.slice(0, 20)}...`
-                                    : ev.descripcion}
-                                </span>
-                              ) : (
+                              <span title={ev.descripcion}>
+                                {ev.descripcion.length > 20
+                                  ? `${ev.descripcion.slice(0, 20)}...`
+                                  : ev.descripcion}
+                              </span>
+                            ) : (
                               <span style={{ color: "var(--gray-400)", fontStyle: "italic" }}>Sin descripción</span>
                             )}
                           </td>

@@ -480,7 +480,7 @@ const InscritosEventoAdmin: React.FC = () => {
                                             <span><Calendar size={12} />{formatFecha(eventoSel.fecha)}</span>
                                             <span><Clock size={12} />{eventoSel.horaInicio} – {eventoSel.horaFin}</span>
                                             <span><MapPin size={12} />{getNombreDestino(eventoSel.destino)}</span>
-                                            <span><Users size={12} />{eventoSel.cupos} cupos</span>
+                                            <span><Users size={12} />{eventoSel.cupos} Cupos</span>
                                         </div>
                                     </div>
                                 </div>

@@ -218,12 +218,12 @@ const InscritosEvento: React.FC = () => {
 
         const doc = new jsPDF({ unit: "mm", format: "a4" });
         const pw = doc.internal.pageSize.getWidth();
-        const BRAND_PRIMARY:   [number,number,number] = [0, 84, 166];
-        const BRAND_SECONDARY: [number,number,number] = [0, 153, 68];
-        const BRAND_WHITE:     [number,number,number] = [255, 255, 255];
-        const BRAND_DARK:      [number,number,number] = [30, 30, 50];
-        const BRAND_GRAY:      [number,number,number] = [100, 100, 110];
-        const BRAND_LIGHT:     [number,number,number] = [240, 242, 245];
+        const BRAND_PRIMARY: [number, number, number] = [0, 84, 166];
+        const BRAND_SECONDARY: [number, number, number] = [0, 153, 68];
+        const BRAND_WHITE: [number, number, number] = [255, 255, 255];
+        const BRAND_DARK: [number, number, number] = [30, 30, 50];
+        const BRAND_GRAY: [number, number, number] = [100, 100, 110];
+        const BRAND_LIGHT: [number, number, number] = [240, 242, 245];
 
         doc.setFillColor(...BRAND_PRIMARY);
         doc.rect(0, 0, pw, 22, "F");
@@ -241,14 +241,14 @@ const InscritosEvento: React.FC = () => {
         doc.setFontSize(9); doc.setFont("helvetica", "normal"); doc.setTextColor(...BRAND_GRAY);
         doc.text(`Evento: ${eventoSel.titulo}`, 14, 44);
 
-        const asistio   = invAsistencia.filter(i => i.estadoAsistencia === "asistio").length;
+        const asistio = invAsistencia.filter(i => i.estadoAsistencia === "asistio").length;
         const noAsistio = invAsistencia.filter(i => i.estadoAsistencia === "no_asistio").length;
-        const pct       = invAsistencia.length > 0 ? Math.round((asistio / invAsistencia.length) * 100) : 0;
+        const pct = invAsistencia.length > 0 ? Math.round((asistio / invAsistencia.length) * 100) : 0;
         const kpis = [
             { label: "Total Inscritos", value: invAsistencia.length },
-            { label: "Asistieron",      value: asistio },
-            { label: "No Asistió",      value: noAsistio },
-            { label: "% Asistencia",    value: `${pct}%` },
+            { label: "Asistieron", value: asistio },
+            { label: "No Asistió", value: noAsistio },
+            { label: "% Asistencia", value: `${pct}%` },
         ];
         let y = 52;
         const boxW = (pw - 28 - 3 * 4) / 4;
@@ -287,12 +287,12 @@ const InscritosEvento: React.FC = () => {
             head: [["#", "Nombre Completo", "Correo Electrónico", "Invitación", "Asistencia"]],
             body: tableData,
             startY: y,
-            headStyles:         { fillColor: BRAND_PRIMARY, textColor: BRAND_WHITE, fontStyle: "bold", fontSize: 8.5, cellPadding: 4 },
-            bodyStyles:         { textColor: BRAND_DARK, fontSize: 8, cellPadding: 3.5 },
+            headStyles: { fillColor: BRAND_PRIMARY, textColor: BRAND_WHITE, fontStyle: "bold", fontSize: 8.5, cellPadding: 4 },
+            bodyStyles: { textColor: BRAND_DARK, fontSize: 8, cellPadding: 3.5 },
             alternateRowStyles: { fillColor: [248, 249, 252] },
-            margin:             { left: 14, right: 14 },
-            tableLineColor:     [220, 225, 235],
-            tableLineWidth:     0.2,
+            margin: { left: 14, right: 14 },
+            tableLineColor: [220, 225, 235],
+            tableLineWidth: 0.2,
             columnStyles: { 0: { cellWidth: 12 }, 1: { cellWidth: 55 }, 2: { cellWidth: 65 }, 3: { cellWidth: 28 }, 4: { cellWidth: 28 } },
         });
 
@@ -366,7 +366,6 @@ const InscritosEvento: React.FC = () => {
                 </div>
 
                 <div className="ins-content">
-                                        {/* Sin evento seleccionado */}
                     {!eventoSelId && (
                         <div className="ins-placeholder">
                             <Calendar size={56} />
@@ -374,10 +373,8 @@ const InscritosEvento: React.FC = () => {
                         </div>
                     )}
 
-                    {/* Contenido del evento seleccionado */}
                     {eventoSel && (
                         <>
-                            {/* Info del evento */}
                             <div className="ins-evento-card">
                                 <div className="ins-evento-info">
                                     <div className="ins-evento-icon"><Calendar size={20} /></div>
@@ -387,7 +384,7 @@ const InscritosEvento: React.FC = () => {
                                             <span><Calendar size={12} />{formatFecha(eventoSel.fecha)}</span>
                                             <span><Clock size={12} />{eventoSel.horaInicio} – {eventoSel.horaFin}</span>
                                             <span><MapPin size={12} />{getNombreDestino(eventoSel.destino)}</span>
-                                            <span><Users size={12} />{eventoSel.cupos} cupos</span>
+                                            <span><Users size={12} />{eventoSel.cuposDisponibles} Cupos</span>
                                         </div>
                                     </div>
                                 </div>
