@@ -55,28 +55,28 @@ const EMPTY_FORM: FormData = {
   horaInicio: "", horaFin: "", destino: "", espacio: "", cupos: 1,
 };
 
-const MESES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
-const DIAS = ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
+const MESES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+const DIAS = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
 
 const getTodayStr = () => {
   const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 };
 
 const FRANJAS = Array.from({ length: 31 }, (_, i) => {
   const t = 7 * 60 + i * 30;
-  return `${Math.floor(t/60).toString().padStart(2,"0")}:${(t%60).toString().padStart(2,"0")}`;
+  return `${Math.floor(t / 60).toString().padStart(2, "0")}:${(t % 60).toString().padStart(2, "0")}`;
 });
 
 /* ═══════════════ HELPERS ═══════════════ */
 
 const formatFecha = (iso: string) => !iso ? "—"
-  : new Date(iso).toLocaleDateString("es-MX", { day:"2-digit", month:"short", year:"numeric", timeZone:"UTC" });
+  : new Date(iso).toLocaleDateString("es-MX", { day: "2-digit", month: "short", year: "numeric", timeZone: "UTC" });
 const toInputDate = (iso: string) => iso ? iso.split("T")[0] : "";
 const nombreDestino = (d: Destino | string) => !d ? "—" : typeof d === "string" ? d : d.nombre;
 const getDestinoId = (d: Destino | string) => !d ? "" : typeof d === "string" ? d : d._id;
 const getSalaId = (e: Evento["espacio"]) => !e ? "" : typeof e === "string" ? e : (e as any)._id;
-const toMin = (h: string) => { const [hh,mm] = h.split(":").map(Number); return hh*60+mm; };
+const toMin = (h: string) => { const [hh, mm] = h.split(":").map(Number); return hh * 60 + mm; };
 const hayTraslapeH = (h1i: string, h1f: string, h2i: string, h2f: string) =>
   toMin(h1i) < toMin(h2f) && toMin(h1f) > toMin(h2i);
 
@@ -98,24 +98,24 @@ const GrillaHorarios: React.FC<GrillaHorariosProps> = ({
   horaInicioSel, horaFinSel, esSuperAdmin, eventoEditandoId, modoEdicion, onChange,
 }) => {
   const [arrastrando, setArrastrando] = useState(false);
-  const [franjaInicio, setFranjaInicio] = useState<number|null>(null);
-  const [franjaFin, setFranjaFin] = useState<number|null>(null);
+  const [franjaInicio, setFranjaInicio] = useState<number | null>(null);
+  const [franjaFin, setFranjaFin] = useState<number | null>(null);
 
   const franjaMinIdx = useMemo(() => {
     if (modoEdicion) return 0;
     if (!fecha) return 0;
     if (fecha !== getTodayStr()) return 0;
     const now = new Date();
-    const nowMin = now.getHours()*60 + now.getMinutes();
-    const idx = FRANJAS.slice(0,-1).findIndex((_,i) => {
-      const [hh,mm] = FRANJAS[i].split(":").map(Number);
-      return hh*60+mm > nowMin;
+    const nowMin = now.getHours() * 60 + now.getMinutes();
+    const idx = FRANJAS.slice(0, -1).findIndex((_, i) => {
+      const [hh, mm] = FRANJAS[i].split(":").map(Number);
+      return hh * 60 + mm > nowMin;
     });
-    return idx === -1 ? FRANJAS.length-1 : idx;
+    return idx === -1 ? FRANJAS.length - 1 : idx;
   }, [fecha, modoEdicion]);
 
-  const franjasOcupadas = useMemo((): Map<number,Evento> => {
-    const map = new Map<number,Evento>();
+  const franjasOcupadas = useMemo((): Map<number, Evento> => {
+    const map = new Map<number, Evento>();
     if (!fecha || !destinoId) return map;
     eventos.forEach(ev => {
       if (!ev.activo) return;
@@ -123,8 +123,8 @@ const GrillaHorarios: React.FC<GrillaHorariosProps> = ({
       if (getDestinoId(ev.destino) !== destinoId) return;
       if (espacioId && getSalaId(ev.espacio) !== espacioId) return;
       if (toInputDate(ev.fecha) !== fecha) return;
-      FRANJAS.slice(0,-1).forEach((franja,idx) => {
-        if (hayTraslapeH(franja, FRANJAS[idx+1], ev.horaInicio, ev.horaFin)) map.set(idx, ev);
+      FRANJAS.slice(0, -1).forEach((franja, idx) => {
+        if (hayTraslapeH(franja, FRANJAS[idx + 1], ev.horaInicio, ev.horaFin)) map.set(idx, ev);
       });
     });
     return map;
@@ -142,16 +142,16 @@ const GrillaHorarios: React.FC<GrillaHorariosProps> = ({
   const handleMouseDown = (idx: number) => {
     if (idx < franjaMinIdx) return;
     if (franjasOcupadas.has(idx) && !esSuperAdmin) return;
-    setArrastrando(true); setFranjaInicio(idx); setFranjaFin(idx+1);
+    setArrastrando(true); setFranjaInicio(idx); setFranjaFin(idx + 1);
   };
   const handleMouseEnter = (idx: number) => {
     if (!arrastrando || franjaInicio === null) return;
-    setFranjaFin(Math.max(idx+1, franjaInicio+1));
+    setFranjaFin(Math.max(idx + 1, franjaInicio + 1));
   };
   const handleMouseUp = () => {
     setArrastrando(false);
     if (franjaInicio !== null && franjaFin !== null)
-      onChange(FRANJAS[franjaInicio], FRANJAS[Math.min(franjaFin, FRANJAS.length-1)]);
+      onChange(FRANJAS[franjaInicio], FRANJAS[Math.min(franjaFin, FRANJAS.length - 1)]);
   };
   const estaSeleccionada = (idx: number) =>
     franjaInicio !== null && franjaFin !== null && idx >= franjaInicio && idx < franjaFin;
@@ -159,8 +159,8 @@ const GrillaHorarios: React.FC<GrillaHorariosProps> = ({
   if (!fecha || !destinoId) {
     return (
       <div style={{
-        padding:"14px", background:"#f9fafb", borderRadius:8,
-        fontSize:"0.8rem", color:"#9ca3af", textAlign:"center", border:"1px dashed #d1d5db"
+        padding: "14px", background: "#f9fafb", borderRadius: 8,
+        fontSize: "0.8rem", color: "#9ca3af", textAlign: "center", border: "1px dashed #d1d5db"
       }}>
         Selecciona un lugar y fecha para ver disponibilidad de horarios
       </div>
@@ -173,13 +173,13 @@ const GrillaHorarios: React.FC<GrillaHorariosProps> = ({
         <Clock size={13} color="#6b7280" />
         <span>Selecciona el horario arrastrando</span>
         {esSuperAdmin && (
-          <span style={{ fontSize:"0.72rem", color:"#d97706", marginLeft:4, fontWeight:500 }}>
+          <span style={{ fontSize: "0.72rem", color: "#d97706", marginLeft: 4, fontWeight: 500 }}>
             · Puedes tomar horarios ocupados (se pedirá reubicar el evento)
           </span>
         )}
       </div>
       <div className="grilla-franjas" onMouseLeave={() => { if (arrastrando) handleMouseUp(); }}>
-        {FRANJAS.slice(0,-1).map((franja,idx) => {
+        {FRANJAS.slice(0, -1).map((franja, idx) => {
           const ev = franjasOcupadas.get(idx);
           const ocupado = !!ev;
           const seleccionada = estaSeleccionada(idx);
@@ -202,10 +202,10 @@ const GrillaHorarios: React.FC<GrillaHorariosProps> = ({
               style={{ cursor: esPasada ? "not-allowed" : undefined }}>
               {franja}
               {esPasada && (
-                <span style={{ position:"absolute", top:1, right:2, fontSize:"0.6rem", opacity:0.5 }}>✕</span>
+                <span style={{ position: "absolute", top: 1, right: 2, fontSize: "0.6rem", opacity: 0.5 }}>✕</span>
               )}
               {!esPasada && ocupado && !seleccionada && (
-                <span style={{ position:"absolute", top:1, right:2, fontSize:"0.6rem" }}>
+                <span style={{ position: "absolute", top: 1, right: 2, fontSize: "0.6rem" }}>
                   {esSuperAdmin ? "⚠" : <Lock size={8} />}
                 </span>
               )}
@@ -215,17 +215,17 @@ const GrillaHorarios: React.FC<GrillaHorariosProps> = ({
       </div>
       <div className="grilla-leyenda">
         <span className="grilla-leyenda-item">
-          <span style={{ width:10, height:10, background:"#2563eb", borderRadius:2, display:"inline-block" }} />Tu selección
+          <span style={{ width: 10, height: 10, background: "#2563eb", borderRadius: 2, display: "inline-block" }} />Tu selección
         </span>
-        <span className="grilla-leyenda-item" style={{ color:"#9ca3af" }}>
-          <span style={{ width:10, height:10, background:"#f3f4f6", border:"1px solid #e5e7eb", borderRadius:2, display:"inline-block" }} />Hora pasada
+        <span className="grilla-leyenda-item" style={{ color: "#9ca3af" }}>
+          <span style={{ width: 10, height: 10, background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 2, display: "inline-block" }} />Hora pasada
         </span>
-        <span className="grilla-leyenda-item" style={{ color:"#dc2626" }}>
-          <span style={{ width:10, height:10, background:"#fee2e2", border:"1px solid #fca5a5", borderRadius:2, display:"inline-block" }} />Ocupado
+        <span className="grilla-leyenda-item" style={{ color: "#dc2626" }}>
+          <span style={{ width: 10, height: 10, background: "#fee2e2", border: "1px solid #fca5a5", borderRadius: 2, display: "inline-block" }} />Ocupado
         </span>
         {esSuperAdmin && (
-          <span className="grilla-leyenda-item" style={{ color:"#d97706" }}>
-            <span style={{ width:10, height:10, background:"#fef3c7", border:"1px solid #fcd34d", borderRadius:2, display:"inline-block" }} />Ocupado (puedes tomar)
+          <span className="grilla-leyenda-item" style={{ color: "#d97706" }}>
+            <span style={{ width: 10, height: 10, background: "#fef3c7", border: "1px solid #fcd34d", borderRadius: 2, display: "inline-block" }} />Ocupado (puedes tomar)
           </span>
         )}
       </div>
@@ -255,26 +255,26 @@ const Eventos: React.FC = () => {
 
   const [showModal, setShowModal] = useState(false);
   const [modoEdicion, setModoEdicion] = useState(false);
-  const [eventoActual, setEventoActual] = useState<Evento|null>(null);
+  const [eventoActual, setEventoActual] = useState<Evento | null>(null);
   const [saving, setSaving] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmMsg, setConfirmMsg] = useState("");
-  const [confirmFn, setConfirmFn] = useState<()=>void>(()=>()=>{});
-  const confirmar = (msg: string, fn: ()=>void) => { setConfirmMsg(msg); setConfirmFn(()=>fn); setConfirmOpen(true); };
+  const [confirmFn, setConfirmFn] = useState<() => void>(() => () => { });
+  const confirmar = (msg: string, fn: () => void) => { setConfirmMsg(msg); setConfirmFn(() => fn); setConfirmOpen(true); };
   const [uploadingImg, setUploadingImg] = useState(false);
-  const [imagenPendiente, setImagenPendiente] = useState<File|null>(null);
+  const [imagenPendiente, setImagenPendiente] = useState<File | null>(null);
   const [modalError, setModalError] = useState("");
   const [formData, setFormData] = useState<FormData>(EMPTY_FORM);
 
-  const [paso, setPaso] = useState<1|2>(1);
-  const [conflicto, setConflicto] = useState<ConflictoInfo|null>(null);
+  const [paso, setPaso] = useState<1 | 2>(1);
+  const [conflicto, setConflicto] = useState<ConflictoInfo | null>(null);
 
   const today = new Date();
   const [calYear, setCalYear] = useState(today.getFullYear());
   const [calMonth, setCalMonth] = useState(today.getMonth());
-  const [diaSeleccionado, setDiaSeleccionado] = useState<string|null>(null);
+  const [diaSeleccionado, setDiaSeleccionado] = useState<string | null>(null);
 
-  const eventosPagina = eventos.slice((pagina-1)*POR_PAGINA, pagina*POR_PAGINA);
+  const eventosPagina = eventos.slice((pagina - 1) * POR_PAGINA, pagina * POR_PAGINA);
 
   const puedeEditar = (ev: Evento) => {
     if (esSuperAdmin) return true;
@@ -290,7 +290,7 @@ const Eventos: React.FC = () => {
       const raw = res.data;
       const lista: Evento[] = Array.isArray(raw) ? raw
         : Array.isArray(raw.data) ? raw.data
-          : (Object.values(raw).find(v=>Array.isArray(v)) as Evento[] || []);
+          : (Object.values(raw).find(v => Array.isArray(v)) as Evento[] || []);
       setEventos(lista);
     } catch { setError("Error al cargar eventos."); }
     finally { setLoading(false); }
@@ -301,7 +301,7 @@ const Eventos: React.FC = () => {
       const res = await api.get("/locations");
       const raw = res.data;
       setDestinos(Array.isArray(raw) ? raw : (raw.data ?? []));
-    } catch {}
+    } catch { }
   };
 
   const fetchEspaciosPorDestino = async (destinoId: string): Promise<Espacio[]> => {
@@ -379,7 +379,7 @@ const Eventos: React.FC = () => {
             if (libresOtros.length > 0) {
               externos.push({ destinoId: d._id, destinoNombre: d.nombre, espacios: libresOtros });
             }
-          } catch {}
+          } catch { }
         })
       );
 
@@ -410,14 +410,14 @@ const Eventos: React.FC = () => {
   useEffect(() => { fetchEventos(); fetchDestinos(); }, []);
 
   /* ── Calendario ── */
-  const diasEnMes = new Date(calYear, calMonth+1, 0).getDate();
+  const diasEnMes = new Date(calYear, calMonth + 1, 0).getDate();
   const primerDia = new Date(calYear, calMonth, 1).getDay();
   const eventosPorDia = (dia: number) => {
-    const ds = `${calYear}-${String(calMonth+1).padStart(2,"0")}-${String(dia).padStart(2,"0")}`;
+    const ds = `${calYear}-${String(calMonth + 1).padStart(2, "0")}-${String(dia).padStart(2, "0")}`;
     return eventos.filter(ev => toInputDate(ev.fecha) === ds);
   };
-  const mesAnterior = () => { calMonth===0 ? (setCalMonth(11),setCalYear(y=>y-1)) : setCalMonth(m=>m-1); setDiaSeleccionado(null); };
-  const mesSiguiente = () => { calMonth===11 ? (setCalMonth(0),setCalYear(y=>y+1)) : setCalMonth(m=>m+1); setDiaSeleccionado(null); };
+  const mesAnterior = () => { calMonth === 0 ? (setCalMonth(11), setCalYear(y => y - 1)) : setCalMonth(m => m - 1); setDiaSeleccionado(null); };
+  const mesSiguiente = () => { calMonth === 11 ? (setCalMonth(0), setCalYear(y => y + 1)) : setCalMonth(m => m + 1); setDiaSeleccionado(null); };
   const eventosDelDia = diaSeleccionado ? eventos.filter(ev => toInputDate(ev.fecha) === diaSeleccionado) : [];
 
   /* ── Modal ── */
@@ -450,12 +450,12 @@ const Eventos: React.FC = () => {
     setEspaciosDestino([]);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: name === "cupos" ? Number(value) : value,
-      ...(name === "destino" ? { espacio:"" } : {}),
+      ...(name === "destino" ? { espacio: "" } : {}),
     }));
     if (name === "destino") fetchEspaciosPorDestino(value);
   };
@@ -485,9 +485,9 @@ const Eventos: React.FC = () => {
       }
       if (formData.fecha === getTodayStr()) {
         const now = new Date();
-        const nowMin = now.getHours()*60 + now.getMinutes();
-        const [hh,mm] = formData.horaInicio.split(":").map(Number);
-        if (hh*60+mm <= nowMin) {
+        const nowMin = now.getHours() * 60 + now.getMinutes();
+        const [hh, mm] = formData.horaInicio.split(":").map(Number);
+        if (hh * 60 + mm <= nowMin) {
           setModalError("No puedes crear eventos en horarios que ya pasaron."); return;
         }
       }
@@ -539,6 +539,13 @@ const Eventos: React.FC = () => {
     try {
       if (modoEdicion && eventoActual) {
         await api.put(`/events/${eventoActual._id}`, dataToSend);
+        if (imagenPendiente) {
+          try {
+            const fd = new FormData();
+            fd.append("image", imagenPendiente);
+            await api.put(`/events/${eventoActual._id}/image`, fd, { headers: { "Content-Type": "multipart/form-data" } });
+          } catch { }
+        }
       } else {
         const resEv = await api.post("/events", { ...dataToSend, creadoPor: userIdActual || undefined });
         const nuevoId = resEv.data?.data?._id || resEv.data?._id;
@@ -547,7 +554,7 @@ const Eventos: React.FC = () => {
             const fd = new FormData();
             fd.append("image", imagenPendiente);
             await api.post(`/events/${nuevoId}/image`, fd, { headers: { "Content-Type": "multipart/form-data" } });
-          } catch {}
+          } catch { }
           setImagenPendiente(null);
         }
       }
@@ -561,7 +568,7 @@ const Eventos: React.FC = () => {
             eventoConf = JSON.parse(data.error.replace("CONFLICT_SALA::", ""));
           else if (err.response?.status === 409 && data?.conflictoSala)
             eventoConf = data.conflictoSala;
-        } catch {}
+        } catch { }
         if (eventoConf) {
           setConflicto({
             eventoId: eventoConf.id || eventoConf._id,
@@ -606,6 +613,14 @@ const Eventos: React.FC = () => {
           nuevaDestinoPrevioId: conflicto.nuevoDestino || undefined,
           updateData: dataToSend,
         });
+
+        if (imagenPendiente) {
+          try {
+            const fd = new FormData();
+            fd.append("image", imagenPendiente);
+            await api.put(`/events/${eventoActual._id}/image`, fd, { headers: { "Content-Type": "multipart/form-data" } });
+          } catch { }
+        }
       } else {
         const resReasignar = await api.post("/events/reasignar-crear", {
           eventoPrevioId: conflicto.eventoId,
@@ -619,7 +634,7 @@ const Eventos: React.FC = () => {
             const fd = new FormData();
             fd.append("image", imagenPendiente);
             await api.post(`/events/${nuevoId}/image`, fd, { headers: { "Content-Type": "multipart/form-data" } });
-          } catch {}
+          } catch { }
           setImagenPendiente(null);
         }
       }
@@ -644,7 +659,7 @@ const Eventos: React.FC = () => {
       if (ev.activo) await api.patch(`/events/${ev._id}/deactivate`);
       else await api.put(`/events/${ev._id}`, { activo: true });
       fetchEventos();
-    } catch {}
+    } catch { }
   };
 
   const nombreCreador = (ev: Evento) => {
@@ -696,11 +711,11 @@ const Eventos: React.FC = () => {
               <FileDown size={15} /> Descargar PDF
             </button>
             <span style={{
-              fontSize:"0.75rem", padding:"4px 12px", borderRadius:20,
+              fontSize: "0.75rem", padding: "4px 12px", borderRadius: 20,
               background: esSuperAdmin ? "rgba(139,92,246,0.2)" : "rgba(255,255,255,0.15)",
               color: esSuperAdmin ? "#c4b5fd" : "rgba(255,255,255,0.85)",
-              border:`1px solid ${esSuperAdmin ? "rgba(139,92,246,0.4)" : "rgba(255,255,255,0.25)"}`,
-              fontWeight:600,
+              border: `1px solid ${esSuperAdmin ? "rgba(139,92,246,0.4)" : "rgba(255,255,255,0.25)"}`,
+              fontWeight: 600,
             }}>
               {esSuperAdmin ? "⚡ Super Admin" : "Admin — solo tus eventos"}
             </span>
@@ -718,45 +733,45 @@ const Eventos: React.FC = () => {
             </div>
             <div className="cal-grid-header">{DIAS.map(d => <div key={d} className="cal-dia-nombre">{d}</div>)}</div>
             <div className="cal-grid">
-              {Array.from({ length: primerDia }).map((_,i) => <div key={`e-${i}`} className="cal-celda vacia" />)}
-              {Array.from({ length: diasEnMes }).map((_,i) => {
-                const dia = i+1, evsDia = eventosPorDia(dia);
-                const key = `${calYear}-${String(calMonth+1).padStart(2,"0")}-${String(dia).padStart(2,"0")}`;
-                const esHoy = today.getDate()===dia && today.getMonth()===calMonth && today.getFullYear()===calYear;
+              {Array.from({ length: primerDia }).map((_, i) => <div key={`e-${i}`} className="cal-celda vacia" />)}
+              {Array.from({ length: diasEnMes }).map((_, i) => {
+                const dia = i + 1, evsDia = eventosPorDia(dia);
+                const key = `${calYear}-${String(calMonth + 1).padStart(2, "0")}-${String(dia).padStart(2, "0")}`;
+                const esHoy = today.getDate() === dia && today.getMonth() === calMonth && today.getFullYear() === calYear;
                 const esPasado = key < getTodayStr();
                 return (
                   <div key={dia}
-                    className={`cal-celda ${esHoy?"hoy":""} ${esPasado?"pasado":""} ${diaSeleccionado===key?"seleccionado":""} ${evsDia.length>0&&!esPasado?"con-evento":""}`}
-                    onClick={() => evsDia.length>0 && !esPasado && setDiaSeleccionado(p => p===key ? null : key)}
-                    style={{ cursor: evsDia.length>0 && !esPasado ? "pointer" : "default" }}>
+                    className={`cal-celda ${esHoy ? "hoy" : ""} ${esPasado ? "pasado" : ""} ${diaSeleccionado === key ? "seleccionado" : ""} ${evsDia.length > 0 && !esPasado ? "con-evento" : ""}`}
+                    onClick={() => evsDia.length > 0 && !esPasado && setDiaSeleccionado(p => p === key ? null : key)}
+                    style={{ cursor: evsDia.length > 0 && !esPasado ? "pointer" : "default" }}>
                     <span className="cal-num">{dia}</span>
-                    {evsDia.slice(0,2).map(ev => (
-                      <div key={ev._id} className={`cal-evento-chip ${ev.activo?"activo":"inactivo"}`}>
-                        {ev.titulo.length>14 ? ev.titulo.slice(0,13)+"…" : ev.titulo}
+                    {evsDia.slice(0, 2).map(ev => (
+                      <div key={ev._id} className={`cal-evento-chip ${ev.activo ? "activo" : "inactivo"}`}>
+                        {ev.titulo.length > 14 ? ev.titulo.slice(0, 13) + "…" : ev.titulo}
                       </div>
                     ))}
-                    {evsDia.length>2 && <div className="cal-evento-mas">+{evsDia.length-2} más</div>}
+                    {evsDia.length > 2 && <div className="cal-evento-mas">+{evsDia.length - 2} más</div>}
                   </div>
                 );
               })}
             </div>
-            {diaSeleccionado && eventosDelDia.length>0 && (
+            {diaSeleccionado && eventosDelDia.length > 0 && (
               <div className="cal-detalle">
-                <h4 style={{ marginBottom:10, fontSize:"0.85rem" }}>
-                  Eventos del {new Date(diaSeleccionado+"T12:00:00").toLocaleDateString("es-MX",{day:"numeric",month:"long"})}
+                <h4 style={{ marginBottom: 10, fontSize: "0.85rem" }}>
+                  Eventos del {new Date(diaSeleccionado + "T12:00:00").toLocaleDateString("es-MX", { day: "numeric", month: "long" })}
                 </h4>
                 {eventosDelDia.map(ev => (
                   <div key={ev._id} className="cal-detalle-item">
-                    <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <strong>{ev.titulo}</strong>
-                      <span className={ev.activo?"estatus-activo":"estatus-inactivo"} style={{ fontSize:"0.75rem" }}>
-                        {ev.activo?"Activo":"Inactivo"}
+                      <span className={ev.activo ? "estatus-activo" : "estatus-inactivo"} style={{ fontSize: "0.75rem" }}>
+                        {ev.activo ? "Activo" : "Inactivo"}
                       </span>
                     </div>
-                    <div style={{ fontSize:"0.8rem", marginTop:4, display:"flex", gap:16 }}>
-                      <span><MapPin size={12} style={{ marginRight:4 }} />{nombreDestino(ev.destino)}</span>
-                      <span><Clock size={12} style={{ marginRight:4 }} />{ev.horaInicio}–{ev.horaFin}</span>
-                      <span><Users size={12} style={{ marginRight:4 }} />{ev.cuposDisponibles}/{ev.cupos}</span>
+                    <div style={{ fontSize: "0.8rem", marginTop: 4, display: "flex", gap: 16 }}>
+                      <span><MapPin size={12} style={{ marginRight: 4 }} />{nombreDestino(ev.destino)}</span>
+                      <span><Clock size={12} style={{ marginRight: 4 }} />{ev.horaInicio}–{ev.horaFin}</span>
+                      <span><Users size={12} style={{ marginRight: 4 }} />{ev.cuposDisponibles}/{ev.cupos}</span>
                     </div>
                   </div>
                 ))}
@@ -765,11 +780,11 @@ const Eventos: React.FC = () => {
           </div>
 
           {/* ══ TABLA ══ */}
-          <div className="eventos-actions-top" style={{ marginTop:32 }}>
+          <div className="eventos-actions-top" style={{ marginTop: 32 }}>
             <button className="eventos-btn-agregar" onClick={abrirAgregar}><Plus size={18} /> Agregar Evento</button>
           </div>
-          {loading && <p style={{ color:"#9ca3af", padding:"24px" }}>Cargando eventos...</p>}
-          {error && <p style={{ color:"#dc2626", padding:"12px" }}>{error}</p>}
+          {loading && <p style={{ color: "#9ca3af", padding: "24px" }}>Cargando eventos...</p>}
+          {error && <p style={{ color: "#dc2626", padding: "12px" }}>{error}</p>}
           {!loading && (
             <>
               <table className="eventos-table">
@@ -786,20 +801,20 @@ const Eventos: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {eventos.length===0 && (
-                    <tr><td colSpan={8} style={{ textAlign:"center", padding:"32px", color:"#9ca3af" }}>Sin eventos registrados</td></tr>
+                  {eventos.length === 0 && (
+                    <tr><td colSpan={8} style={{ textAlign: "center", padding: "32px", color: "#9ca3af" }}>Sin eventos registrados</td></tr>
                   )}
                   {eventosPagina.map(ev => {
                     const puedeMod = puedeEditar(ev);
                     return (
                       <tr key={ev._id} style={{ opacity: puedeMod ? 1 : 0.6 }}>
-                        <td style={{ fontWeight:600 }}>{ev.titulo}</td>
+                        <td style={{ fontWeight: 600 }}>{ev.titulo}</td>
                         <td>{nombreDestino(ev.destino)}</td>
                         <td>{formatFecha(ev.fecha)}</td>
                         <td>{ev.horaInicio}–{ev.horaFin}</td>
                         <td>{ev.cuposDisponibles}/{ev.cupos}</td>
-                        <td style={{ fontSize:"0.82rem", color:"#6b7280" }}>{nombreCreador(ev)}</td>
-                        <td><span className={ev.activo?"estatus-activo":"estatus-inactivo"}>{ev.activo?"Activo":"Inactivo"}</span></td>
+                        <td style={{ fontSize: "0.82rem", color: "#6b7280" }}>{nombreCreador(ev)}</td>
+                        <td><span className={ev.activo ? "estatus-activo" : "estatus-inactivo"}>{ev.activo ? "Activo" : "Inactivo"}</span></td>
                         <td className="acciones">
                           <button className="btn-icon" title="Ver inscritos y asistencia"
                             onClick={() => navigate(`/admin-sp/inscritos/${ev._id}`)}>
@@ -825,18 +840,18 @@ const Eventos: React.FC = () => {
       {/* ═══════════════ MODAL CRUD ═══════════════ */}
       {showModal && (
         <div className="modal-overlay">
-          <div className="modal-container" style={{ maxWidth:560 }}>
+          <div className="modal-container" style={{ maxWidth: 560 }}>
 
             <div className="modal-header">
               <div>
                 <h2>{modoEdicion ? "Editar Evento" : "Agregar Evento"}</h2>
                 {esSuperAdmin && (
                   <div className="paso-indicador">
-                    <span className={`paso-burbuja ${paso===1 ? "activo" : "completado"}`}>1</span>
+                    <span className={`paso-burbuja ${paso === 1 ? "activo" : "completado"}`}>1</span>
                     <span className="paso-linea" />
-                    <span className={`paso-burbuja ${paso===2 ? "activo" : "inactivo"}`}>2</span>
+                    <span className={`paso-burbuja ${paso === 2 ? "activo" : "inactivo"}`}>2</span>
                     <span className="paso-etiqueta">
-                      {paso===1 ? "Datos del evento" : "Reubicar evento existente"}
+                      {paso === 1 ? "Datos del evento" : "Reubicar evento existente"}
                     </span>
                   </div>
                 )}
@@ -917,17 +932,17 @@ const Eventos: React.FC = () => {
                       <div className="form-group">
                         <label>Hora inicio</label>
                         <input type="time" value={formData.horaInicio} readOnly
-                          style={{ background:"#f9fafb", cursor:"default", color:"#374151" }} />
+                          style={{ background: "#f9fafb", cursor: "default", color: "#374151" }} />
                       </div>
                       <div className="form-group">
                         <label>Hora fin</label>
                         <input type="time" value={formData.horaFin} readOnly
-                          style={{ background:"#f9fafb", cursor:"default", color:"#374151" }} />
+                          style={{ background: "#f9fafb", cursor: "default", color: "#374151" }} />
                       </div>
                     </div>
                   )}
                   {formData.horaInicio && formData.horaFin && (
-                    <p style={{ fontSize:"0.78rem", color:"#6b7280", margin:"-4px 0 4px", padding:"6px 10px", background:"rgba(59,130,246,0.05)", borderRadius:6, border:"1px solid rgba(59,130,246,0.12)" }}>
+                    <p style={{ fontSize: "0.78rem", color: "#6b7280", margin: "-4px 0 4px", padding: "6px 10px", background: "rgba(59,130,246,0.05)", borderRadius: 6, border: "1px solid rgba(59,130,246,0.12)" }}>
                       ℹ️ Se agrega automáticamente un margen de 30 min al final del evento para transición.
                     </p>
                   )}
@@ -935,7 +950,7 @@ const Eventos: React.FC = () => {
                   {modoEdicion && eventoActual && (
                     <div className="form-group">
                       <label>Imagen del evento</label>
-                      <div style={{ marginTop:6 }}>
+                      <div style={{ marginTop: 6 }}>
                         <ImageUploader
                           currentImage={eventoActual.image}
                           onUpload={file => subirImagenEvento(eventoActual._id, file)}
@@ -948,7 +963,7 @@ const Eventos: React.FC = () => {
                   {!modoEdicion && (
                     <div className="form-group">
                       <label>Imagen del evento <span className="label-opcional">(opcional)</span></label>
-                      <div style={{ marginTop:6 }}>
+                      <div style={{ marginTop: 6 }}>
                         <ImageUploader
                           currentImage={imagenPendiente ? URL.createObjectURL(imagenPendiente) : null}
                           onUpload={async (file) => setImagenPendiente(file)}
@@ -973,23 +988,23 @@ const Eventos: React.FC = () => {
             {/* ══ PASO 2 ══ */}
             {paso === 2 && conflicto && (
               <>
-                <div className="modal-body" style={{ gap:16 }}>
+                <div className="modal-body" style={{ gap: 16 }}>
 
                   {/* Banner de advertencia */}
                   <div style={{
-                    background:"linear-gradient(135deg,#fef3c7,#fde68a)",
-                    border:"1px solid #f59e0b", borderRadius:10, padding:"14px 16px",
-                    display:"flex", gap:10, alignItems:"flex-start"
+                    background: "linear-gradient(135deg,#fef3c7,#fde68a)",
+                    border: "1px solid #f59e0b", borderRadius: 10, padding: "14px 16px",
+                    display: "flex", gap: 10, alignItems: "flex-start"
                   }}>
-                    <AlertTriangle size={20} color="#d97706" style={{ flexShrink:0, marginTop:1 }} />
+                    <AlertTriangle size={20} color="#d97706" style={{ flexShrink: 0, marginTop: 1 }} />
                     <div>
-                      <p style={{ fontWeight:700, color:"#92400e", fontSize:"0.88rem", margin:0 }}>
+                      <p style={{ fontWeight: 700, color: "#92400e", fontSize: "0.88rem", margin: 0 }}>
                         El lugar y espacio seleccionado ya está ocupado
                       </p>
-                      <p style={{ color:"#78350f", fontSize:"0.8rem", margin:"4px 0 0" }}>
+                      <p style={{ color: "#78350f", fontSize: "0.8rem", margin: "4px 0 0" }}>
                         El horario <strong>{formData.horaInicio}–{formData.horaFin}</strong> del{" "}
                         <strong>
-                          {new Date(formData.fecha+"T12:00:00").toLocaleDateString("es-MX",{day:"numeric",month:"long",year:"numeric"})}
+                          {new Date(formData.fecha + "T12:00:00").toLocaleDateString("es-MX", { day: "numeric", month: "long", year: "numeric" })}
                         </strong>{" "}
                         está ocupado por <em>"{conflicto.eventoTitulo}"</em>. Para continuar,
                         elige un nuevo lugar y espacio donde mover ese evento.
@@ -1002,11 +1017,11 @@ const Eventos: React.FC = () => {
                     <p className="ne-label">Tu evento ({modoEdicion ? "editado" : "nuevo"}):</p>
                     <p className="ne-titulo">{formData.titulo}</p>
                     <p className="ne-meta">
-                      {new Date(formData.fecha+"T12:00:00").toLocaleDateString("es-MX",{day:"numeric",month:"long"})}
+                      {new Date(formData.fecha + "T12:00:00").toLocaleDateString("es-MX", { day: "numeric", month: "long" })}
                       {" · "}{formData.horaInicio}–{formData.horaFin}
-                      {" · "}{destinos.find(d=>d._id===formData.destino)?.nombre || ""}
-                      {formData.espacio && espaciosDestino.length>0
-                        ? ` · ${espaciosDestino.find(e=>e._id===formData.espacio)?.nombre || ""}`
+                      {" · "}{destinos.find(d => d._id === formData.destino)?.nombre || ""}
+                      {formData.espacio && espaciosDestino.length > 0
+                        ? ` · ${espaciosDestino.find(e => e._id === formData.espacio)?.nombre || ""}`
                         : ""}
                     </p>
                   </div>
@@ -1016,17 +1031,17 @@ const Eventos: React.FC = () => {
                     <p className="conflicto-titulo"><AlertTriangle size={14} /> Evento a reubicar:</p>
                     <p className="conflicto-nombre">"{conflicto.eventoTitulo}"</p>
                     <p className="conflicto-horario">{conflicto.horaInicio}–{conflicto.horaFin}</p>
-                    <p style={{ fontSize:"0.77rem", color:"#b91c1c", marginTop:4, marginBottom:0 }}>
+                    <p style={{ fontSize: "0.77rem", color: "#b91c1c", marginTop: 4, marginBottom: 0 }}>
                       Selecciona un nuevo lugar y espacio para este evento.
                     </p>
                   </div>
 
                   {/* Sugerencias */}
                   <div className="form-group">
-                    <label style={{ fontWeight:600, color:"#374151" }}>
+                    <label style={{ fontWeight: 600, color: "#374151" }}>
                       Sugerencias de reubicación para "{conflicto.eventoTitulo}" *
                     </label>
-                    <p className="form-hint" style={{ marginTop:4 }}>
+                    <p className="form-hint" style={{ marginTop: 4 }}>
                       El sistema mostrará sugerencias de espacios disponibles con capacidad suficiente.
                     </p>
 
@@ -1043,13 +1058,13 @@ const Eventos: React.FC = () => {
                     {!conflicto.loadingEspacios && conflicto.espaciosCargados.length > 0 && (
                       <div className="sugerencias-group">
                         <h4>Sugerencias en el edificio actual</h4>
-                        <div style={{ display:"flex", flexDirection:"column", gap:8, marginTop:6 }}>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 6 }}>
                           {conflicto.espaciosCargados.map(sala => (
                             <label
                               key={sala._id}
                               className={`sala-opcion ${conflicto.nuevoDestino === formData.destino && conflicto.nuevoEspacio === sala._id ? "seleccionada" : ""}`}
                               onClick={() => seleccionarSalaReubicacion(formData.destino, sala._id)}
-                              style={{ cursor:"pointer" }}
+                              style={{ cursor: "pointer" }}
                             >
                               {conflicto.nuevoDestino === formData.destino && conflicto.nuevoEspacio === sala._id
                                 ? <CheckCircle2 size={18} color="#16a34a" />
@@ -1065,18 +1080,18 @@ const Eventos: React.FC = () => {
                     )}
 
                     {!conflicto.loadingEspacios && conflicto.espaciosExternos.length > 0 && (
-                      <div className="sugerencias-group" style={{ marginTop:14 }}>
+                      <div className="sugerencias-group" style={{ marginTop: 14 }}>
                         <h4>Sugerencias en otros edificios</h4>
                         {conflicto.espaciosExternos.map(dest => (
-                          <div key={dest.destinoId} style={{ border:"1px solid #e5e7eb", borderRadius:8, padding:10, marginBottom:10 }}>
-                            <p style={{ margin:"0 0 6px", fontWeight:600 }}>{dest.destinoNombre}</p>
-                            <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                          <div key={dest.destinoId} style={{ border: "1px solid #e5e7eb", borderRadius: 8, padding: 10, marginBottom: 10 }}>
+                            <p style={{ margin: "0 0 6px", fontWeight: 600 }}>{dest.destinoNombre}</p>
+                            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                               {dest.espacios.map(sala => (
                                 <label
                                   key={sala._id}
                                   className={`sala-opcion ${conflicto.nuevoDestino === dest.destinoId && conflicto.nuevoEspacio === sala._id ? "seleccionada" : ""}`}
                                   onClick={() => seleccionarSalaReubicacion(dest.destinoId, sala._id)}
-                                  style={{ cursor:"pointer" }}
+                                  style={{ cursor: "pointer" }}
                                 >
                                   {conflicto.nuevoDestino === dest.destinoId && conflicto.nuevoEspacio === sala._id
                                     ? <CheckCircle2 size={18} color="#16a34a" />
@@ -1096,19 +1111,19 @@ const Eventos: React.FC = () => {
                     {/* Confirmación visual cuando ya eligió */}
                     {conflicto.nuevoEspacio && (
                       <div style={{
-                        background:"#f0fdf4", border:"1px solid #86efac",
-                        borderRadius:8, padding:"10px 14px",
-                        display:"flex", gap:8, alignItems:"center",
-                        marginTop:12,
+                        background: "#f0fdf4", border: "1px solid #86efac",
+                        borderRadius: 8, padding: "10px 14px",
+                        display: "flex", gap: 8, alignItems: "center",
+                        marginTop: 12,
                       }}>
-                        <CheckCircle2 size={16} color="#16a34a" style={{ flexShrink:0 }} />
-                        <p style={{ fontSize:"0.82rem", color:"#15803d", margin:0 }}>
+                        <CheckCircle2 size={16} color="#16a34a" style={{ flexShrink: 0 }} />
+                        <p style={{ fontSize: "0.82rem", color: "#15803d", margin: 0 }}>
                           <strong>"{conflicto.eventoTitulo}"</strong> se moverá a{" "}
-                          <strong>{destinos.find(d=>d._id===conflicto.nuevoDestino)?.nombre}</strong>
+                          <strong>{destinos.find(d => d._id === conflicto.nuevoDestino)?.nombre}</strong>
                           {" – "}
                           <strong>
-                            {conflicto.espaciosCargados.find(e=>e._id===conflicto.nuevoEspacio)?.nombre
-                              || conflicto.espaciosExternos.flatMap(d=>d.espacios).find(e=>e._id===conflicto.nuevoEspacio)?.nombre}
+                            {conflicto.espaciosCargados.find(e => e._id === conflicto.nuevoEspacio)?.nombre
+                              || conflicto.espaciosExternos.flatMap(d => d.espacios).find(e => e._id === conflicto.nuevoEspacio)?.nombre}
                           </strong>.
                           Pulsa <strong>"Confirmar"</strong> para guardar ambos cambios.
                         </p>

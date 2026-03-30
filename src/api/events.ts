@@ -19,3 +19,5 @@ export const getEvents = async (): Promise<Event[]> => {
     return [];
   }
 };
+
+
