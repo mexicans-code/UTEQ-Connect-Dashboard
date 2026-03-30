@@ -1,0 +1,728 @@
+/* ══════════════════════════════════════════
+   GESTIÓN EVENTOS — CSS con Dark Mode
+   Usa variables de index.css (:root / [data-theme="dark"])
+══════════════════════════════════════════ */
+
+/* ── Layout ── */
+.ge-container {
+  display: flex;
+  min-height: 100vh;
+  background: var(--bg-main);
+  transition: background 0.3s ease;
+}
+
+.ge-main {
+  flex: 1;
+  padding: 28px 32px;
+  overflow: auto;
+}
+
+/* ── Header ── */
+.ge-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.ge-header-left h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 2px;
+}
+
+.ge-header-left p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.ge-badge-rol {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: var(--primary-light);
+  color: var(--primary-text);
+  border: 1px solid var(--border);
+}
+
+/* ── Botón nuevo ── */
+.ge-btn-nuevo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  border-radius: var(--radius-md);
+  background: var(--primary);
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+}
+
+.ge-btn-nuevo:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.45);
+}
+
+/* ── Tabs ── */
+.ge-tabs-bar {
+  display: flex;
+  gap: 4px;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 20px;
+}
+
+.ge-tab {
+  padding: 8px 18px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.ge-tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+  font-weight: 600;
+}
+
+.ge-tab:hover:not(.active) {
+  color: var(--text-secondary);
+}
+
+.ge-tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: var(--gray-100);
+  color: var(--gray-600);
+}
+
+.ge-tab.active .ge-tab-count {
+  background: var(--primary-light);
+  color: var(--primary-text);
+}
+
+/* ── Toolbar / Búsqueda ── */
+.ge-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.ge-search-wrapper {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+  max-width: 380px;
+}
+
+.ge-search-wrapper svg {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--gray-400);
+  pointer-events: none;
+}
+
+.ge-search {
+  width: 100%;
+  padding: 8px 12px 8px 34px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--border-input);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  font-family: var(--font-sans);
+  outline: none;
+  transition: border-color 0.2s, background 0.3s;
+  box-sizing: border-box;
+}
+
+.ge-search:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.ge-search::placeholder {
+  color: var(--gray-400);
+}
+
+/* ── Aviso solo lectura ── */
+.ge-readonly-notice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  background: var(--yellow-50);
+  border: 1px solid rgba(217, 119, 6, 0.25);
+  color: var(--yellow-600);
+  font-size: 0.85rem;
+  font-family: var(--font-sans);
+  margin-bottom: 16px;
+}
+
+/* ── Tabla ── */
+.ge-table-wrapper {
+  overflow-x: auto;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  background: var(--bg-card);
+}
+
+.ge-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  font-family: var(--font-sans);
+}
+
+.ge-table thead tr {
+  background: var(--bg-table-head);
+  border-bottom: 1px solid var(--border);
+}
+
+.ge-table thead th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.ge-table tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+  background: var(--bg-table-row);
+}
+
+.ge-table tbody tr:nth-child(even) {
+  background: var(--bg-table-alt);
+}
+
+.ge-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.ge-table tbody tr:hover {
+  background: var(--bg-hover);
+}
+
+.ge-table tbody tr.ge-row-locked {
+  opacity: 0.7;
+  background: var(--bg-table-row);
+}
+
+.ge-table tbody tr.ge-row-locked:hover {
+  background: var(--bg-table-row);
+  cursor: not-allowed;
+}
+
+.ge-table tbody tr.ge-row-pasado {
+  opacity: 0.65;
+  background: var(--bg-table-row);
+}
+
+.ge-table tbody tr.ge-row-pasado:hover {
+  background: var(--bg-table-row);
+  cursor: not-allowed;
+}
+
+.ge-table td {
+  padding: 12px 16px;
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+
+/* ── Badges de estado ── */
+.ge-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.ge-badge--activo {
+  background: var(--green-50);
+  color: var(--green-600);
+  border: 1px solid rgba(22, 163, 74, 0.2);
+}
+
+.ge-badge--inactivo {
+  background: var(--gray-100);
+  color: var(--gray-500);
+  border: 1px solid var(--border);
+}
+
+.ge-badge--lleno {
+  background: var(--red-100);
+  color: var(--red-600);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+}
+
+/* Badges para estado invitación/asistencia */
+.ge-inv-badge--aceptada  { background: var(--green-50); color: var(--green-600); border: 1px solid rgba(22,163,74,.2); padding: 2px 9px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; }
+.ge-inv-badge--rechazada { background: var(--red-100); color: var(--red-600); border: 1px solid rgba(220,38,38,.2); padding: 2px 9px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; }
+.ge-inv-badge--pendiente { background: var(--yellow-50); color: var(--yellow-600); border: 1px solid rgba(217,119,6,.2); padding: 2px 9px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; }
+.ge-inv-badge--asistio   { background: var(--green-50); color: var(--green-600); border: 1px solid rgba(22,163,74,.2); padding: 2px 9px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; }
+.ge-inv-badge--noasistio { background: var(--red-100); color: var(--red-600); border: 1px solid rgba(220,38,38,.2); padding: 2px 9px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; }
+.ge-inv-badge--default   { background: var(--gray-100); color: var(--gray-500); border: 1px solid var(--border); padding: 2px 9px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; }
+
+/* ── Acciones de tabla ── */
+.ge-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.ge-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+  padding: 0;
+}
+
+.ge-btn-icon:hover {
+  background: var(--bg-hover);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.ge-btn-icon--danger:hover {
+  border-color: var(--red-600);
+  color: var(--red-600);
+  background: var(--red-50);
+}
+
+.ge-btn-icon--toggle-on {
+  color: var(--green-600);
+  border-color: rgba(22, 163, 74, 0.3);
+  background: var(--green-50);
+}
+
+.ge-btn-icon--toggle-off {
+  color: var(--gray-400);
+}
+
+/* ── Estado vacío ── */
+.ge-empty {
+  text-align: center;
+  padding: 64px 24px;
+  color: var(--text-muted);
+}
+
+.ge-empty svg {
+  margin-bottom: 12px;
+  opacity: 0.4;
+  color: var(--gray-400);
+}
+
+.ge-empty h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin: 0 0 6px;
+}
+
+.ge-empty p {
+  font-size: 0.85rem;
+  margin: 0;
+  color: var(--text-muted);
+}
+
+/* ── Modal ── */
+.ge-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-overlay);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  backdrop-filter: blur(3px);
+  transition: background 0.3s;
+}
+
+.ge-modal {
+  background: var(--bg-modal);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 680px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-modal);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.ge-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-modal);
+}
+
+.ge-modal-header h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 3px;
+}
+
+.ge-modal-header p {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.ge-modal-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.ge-modal-close:hover {
+  background: var(--red-50);
+  border-color: var(--red-600);
+  color: var(--red-600);
+}
+
+.ge-modal-body {
+  padding: 20px 24px;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ge-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 24px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-table-head);
+}
+
+/* ── Formulario del modal ── */
+.ge-form-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 5px;
+  font-family: var(--font-sans);
+}
+
+.ge-form-label span {
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.ge-input,
+.ge-select,
+.ge-textarea {
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--border-input);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  font-family: var(--font-sans);
+  outline: none;
+  transition: border-color 0.2s, background 0.3s, color 0.3s;
+  box-sizing: border-box;
+}
+
+.ge-input:focus,
+.ge-select:focus,
+.ge-textarea:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.ge-input::placeholder,
+.ge-textarea::placeholder {
+  color: var(--gray-400);
+}
+
+.ge-input:disabled,
+.ge-select:disabled {
+  background: var(--gray-100);
+  color: var(--gray-400);
+  cursor: not-allowed;
+}
+
+.ge-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.ge-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.ge-form-hint {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  margin: 4px 0 0;
+}
+
+.ge-modal-error {
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: var(--red-50);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  color: var(--red-600);
+  font-size: 0.85rem;
+  font-family: var(--font-sans);
+}
+
+/* ── Botones del footer ── */
+.ge-btn-cancelar {
+  padding: 8px 18px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.ge-btn-cancelar:hover {
+  border-color: var(--gray-400);
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.ge-btn-guardar {
+  padding: 8px 22px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--primary);
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.ge-btn-guardar:hover:not(:disabled) {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.ge-btn-guardar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ── Tabla de inscritos (modal) ── */
+.ge-inv-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  font-family: var(--font-sans);
+}
+
+.ge-inv-table thead tr {
+  background: var(--bg-table-head);
+  border-bottom: 1px solid var(--border);
+}
+
+.ge-inv-table th {
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.ge-inv-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+}
+
+.ge-inv-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.ge-inv-table tbody tr:hover {
+  background: var(--bg-hover);
+}
+
+/* ── Grilla de horarios ── */
+.modal-grilla-horarios {
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  background: var(--bg-card);
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.grilla-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  font-family: var(--font-sans);
+}
+
+.grilla-franjas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+
+.grilla-franja {
+  position: relative;
+  width: 52px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-family: var(--font-sans);
+  border-radius: 5px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-input);
+  color: var(--text-muted);
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.12s;
+}
+
+.grilla-franja:hover:not(.ocupado):not(.pasada) {
+  border-color: var(--primary);
+  background: var(--primary-light);
+  color: var(--primary-text);
+}
+
+.grilla-franja.seleccionada {
+  background: var(--primary);
+  border-color: var(--primary-hover);
+  color: #fff;
+  font-weight: 700;
+}
+
+.grilla-franja.ocupado {
+  background: var(--red-100);
+  border-color: rgba(220, 38, 38, 0.3);
+  color: var(--red-600);
+  cursor: not-allowed;
+}
+
+.grilla-franja.pasada {
+  background: var(--gray-100);
+  border-color: var(--border);
+  color: var(--gray-400);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.grilla-leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.grilla-leyenda-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  font-family: var(--font-sans);
+  color: var(--text-muted);
+}
+
+.grilla-resumen {
+  font-size: 0.82rem;
+  font-family: var(--font-sans);
+  color: var(--text-secondary);
+  margin: 10px 0 0;
+}
+
+/* ── Imagen del evento (card) ── */
+.ge-event-img {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  border: 1px solid var(--border);
+  background: var(--gray-100);
+}

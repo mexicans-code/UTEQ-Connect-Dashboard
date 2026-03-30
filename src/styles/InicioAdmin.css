@@ -1,0 +1,393 @@
+/* ══════════════════════════════════════════
+   INICIO ADMIN — CSS con Dark Mode
+══════════════════════════════════════════ */
+
+/* ── Layout base ── */
+.admin-container {
+  display: flex;
+  min-height: 100vh;
+  background: var(--bg-main);
+  transition: background 0.3s ease;
+}
+
+.admin-main {
+  flex: 1;
+  padding: 28px 32px;
+  overflow: auto;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  width: 240px;
+  min-height: 100vh;
+  background: var(--bg-sidebar);
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  flex-shrink: 0;
+  transition: background 0.3s ease;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+}
+
+.sidebar-logo {
+  padding: 24px 20px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-logo img {
+  max-width: 140px;
+  height: auto;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 12px 0;
+  overflow-y: auto;
+}
+
+.sidebar-nav a,
+.sidebar-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  color: var(--text-sidebar);
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  text-decoration: none;
+  border-left: 3px solid transparent;
+  transition: all 0.15s;
+  cursor: pointer;
+  background: transparent;
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+  width: 100%;
+  text-align: left;
+}
+
+.sidebar-nav a:hover,
+.sidebar-nav-item:hover {
+  background: var(--bg-sidebar-hover);
+  color: var(--text-sidebar-active);
+}
+
+.sidebar-nav a.active,
+.sidebar-nav-item.active {
+  background: var(--bg-sidebar-hover);
+  color: var(--text-sidebar-active);
+  border-left-color: var(--primary);
+  font-weight: 600;
+}
+
+.sidebar-bottom {
+  padding: 16px 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ── Page Header ── */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.page-header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 4px;
+}
+
+.page-header p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* ── Cards de estadísticas ── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px 22px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: var(--shadow);
+  transition: background 0.3s, border-color 0.3s, box-shadow 0.2s, transform 0.2s;
+}
+
+.stat-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.stat-card__icon {
+  width: 46px;
+  height: 46px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stat-card__icon--blue   { background: var(--primary-light); color: var(--primary); }
+.stat-card__icon--green  { background: var(--green-50); color: var(--green-600); }
+.stat-card__icon--yellow { background: var(--yellow-50); color: var(--yellow-600); }
+.stat-card__icon--red    { background: var(--red-50); color: var(--red-600); }
+
+.stat-card__value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+  margin: 0 0 4px;
+}
+
+.stat-card__label {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin: 0;
+}
+
+/* ── Cards genéricas ── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--border);
+}
+
+.card-header h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.card-body {
+  padding: 18px 22px;
+}
+
+/* ── Botones primarios/secundarios ── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  border-radius: var(--radius-md);
+  background: var(--primary);
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  border: 1.5px solid var(--border);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-secondary:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-light);
+}
+
+/* ── Tabla genérica ── */
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  font-family: var(--font-sans);
+}
+
+.table thead tr {
+  background: var(--bg-table-head);
+  border-bottom: 2px solid var(--border);
+}
+
+.table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table tbody tr:hover {
+  background: var(--bg-hover);
+}
+
+/* ── Input / Select genéricos ── */
+.input {
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--border-input);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  font-family: var(--font-sans);
+  outline: none;
+  transition: border-color 0.2s, background 0.3s;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.input::placeholder {
+  color: var(--gray-400);
+}
+
+.label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 5px;
+  font-family: var(--font-sans);
+}
+
+/* ── Modal genérico ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-overlay);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  backdrop-filter: blur(3px);
+}
+
+.modal {
+  background: var(--bg-modal);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-modal);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-header h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.modal-body {
+  padding: 20px 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 24px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-table-head);
+}
+
+/* ── Error / Éxito ── */
+.alert-error {
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: var(--red-50);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  color: var(--red-600);
+  font-size: 0.85rem;
+  font-family: var(--font-sans);
+}
+
+.alert-success {
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: var(--green-50);
+  border: 1px solid rgba(22, 163, 74, 0.2);
+  color: var(--green-600);
+  font-size: 0.85rem;
+  font-family: var(--font-sans);
+}

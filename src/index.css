@@ -1,16 +1,128 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Poppins", sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* ══════════════════════════════
+     VARIABLES TEMA CLARO (default)
+  ══════════════════════════════ */
+  --bg-main:         #f0f2f5;
+  --bg-card:         #ffffff;
+  --bg-sidebar:      #1a2744;
+  --bg-sidebar-hover:#243460;
+  --bg-input:        #ffffff;
+  --bg-hover:        #f8fafc;
+  --bg-modal:        #ffffff;
+  --bg-overlay:      rgba(0,0,0,0.45);
+  --bg-table-head:   #f8fafc;
+  --bg-table-row:    #ffffff;
+  --bg-table-alt:    #f9fafb;
+
+  --text-primary:    #1a202c;
+  --text-secondary:  #4a5568;
+  --text-muted:      #718096;
+  --text-sidebar:    #cbd5e1;
+  --text-sidebar-active: #ffffff;
+
+  --border:          #e2e8f0;
+  --border-input:    #d1d5db;
+  --border-focus:    #3b82f6;
+
+  --primary:         #2563eb;
+  --primary-hover:   #1d4ed8;
+  --primary-light:   #dbeafe;
+  --primary-text:    #1e40af;
+
+  --red-50:          #fef2f2;
+  --red-100:         #fee2e2;
+  --red-600:         #dc2626;
+  --green-50:        #f0fdf4;
+  --green-600:       #16a34a;
+  --yellow-50:       #fffbeb;
+  --yellow-600:      #d97706;
+
+  --gray-50:         #f9fafb;
+  --gray-100:        #f3f4f6;
+  --gray-200:        #e5e7eb;
+  --gray-300:        #d1d5db;
+  --gray-400:        #9ca3af;
+  --gray-500:        #6b7280;
+  --gray-600:        #4b5563;
+  --gray-700:        #374151;
+  --gray-800:        #1f2937;
+  --gray-900:        #111827;
+
+  --shadow:          0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md:       0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
+  --shadow-lg:       0 10px 15px rgba(0,0,0,0.08), 0 4px 6px rgba(0,0,0,0.05);
+  --shadow-modal:    0 20px 60px rgba(0,0,0,0.15);
+
+  --radius-sm:       6px;
+  --radius-md:       10px;
+  --radius-lg:       16px;
+  --font-sans:       "Poppins", sans-serif;
+}
+
+/* ══════════════════════════════
+   VARIABLES TEMA OSCURO
+══════════════════════════════ */
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg-main:         #0d1117;
+  --bg-card:         #161b22;
+  --bg-sidebar:      #0d1117;
+  --bg-sidebar-hover:#1c2333;
+  --bg-input:        #21262d;
+  --bg-hover:        #1c2333;
+  --bg-modal:        #161b22;
+  --bg-overlay:      rgba(0,0,0,0.7);
+  --bg-table-head:   #1c2333;
+  --bg-table-row:    #161b22;
+  --bg-table-alt:    #1a1f29;
+
+  --text-primary:    #e6edf3;
+  --text-secondary:  #8b949e;
+  --text-muted:      #6e7681;
+  --text-sidebar:    #8b949e;
+  --text-sidebar-active: #ffffff;
+
+  --border:          #30363d;
+  --border-input:    #30363d;
+  --border-focus:    #58a6ff;
+
+  --primary:         #58a6ff;
+  --primary-hover:   #79c0ff;
+  --primary-light:   #1c2d45;
+  --primary-text:    #79c0ff;
+
+  --red-50:          #2d1b1b;
+  --red-100:         #3d2020;
+  --red-600:         #f87171;
+  --green-50:        #1a2d1a;
+  --green-600:       #4ade80;
+  --yellow-50:       #2d2510;
+  --yellow-600:      #fbbf24;
+
+  --gray-50:         #1c2333;
+  --gray-100:        #21262d;
+  --gray-200:        #30363d;
+  --gray-300:        #3d444e;
+  --gray-400:        #6e7681;
+  --gray-500:        #8b949e;
+  --gray-600:        #b1bac4;
+  --gray-700:        #c9d1d9;
+  --gray-800:        #e6edf3;
+  --gray-900:        #f0f6fc;
+
+  --shadow:          0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
+  --shadow-md:       0 4px 6px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.3);
+  --shadow-lg:       0 10px 15px rgba(0,0,0,0.5), 0 4px 6px rgba(0,0,0,0.3);
+  --shadow-modal:    0 20px 60px rgba(0,0,0,0.6);
 }
 
 a {
@@ -24,10 +136,12 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  display: block;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 h1 {
@@ -54,15 +168,14 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+/* Inputs y selects — soporte dark mode global */
+input, select, textarea {
+  background-color: var(--bg-input);
+  color: var(--text-primary);
+  border-color: var(--border-input);
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+button {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.25s;
 }
