@@ -6,6 +6,7 @@ import api from "../../api/axios";
 import ConfirmModal from "../../components/ConfirmModal";
 import Paginacion from "../../components/Paginacion";
 import { exportUsuariosPDF } from "../../utils/pdfExport";
+import { notifyLocal } from "../../utils/notify.ts";
 
 interface Usuario {
   _id: string;
@@ -130,6 +131,10 @@ const Usuarios: React.FC = () => {
         });
       }
       cerrarModal(); fetchUsuarios();
+      notifyLocal(
+        modoEdicion ? "Usuario actualizado" : "Usuario creado",
+        modoEdicion ? `${formData.nombre} fue actualizado.` : `${formData.nombre} fue creado correctamente.`
+      );
     } catch (err: any) { setError(err.response?.data?.error || "Error al guardar usuario."); }
     finally { setSaving(false); }
   };
@@ -137,7 +142,7 @@ const Usuarios: React.FC = () => {
   const eliminarUsuario = async (u: Usuario) => {
     if (ROL_ACTUAL === "admin" && u.rol === "superadmin") { setError("Sin permisos para eliminar Super Admins."); return; }
     confirmar(`¿Eliminar permanentemente a ${u.nombre}? Esta acción no se puede deshacer.`, async () => {
-      try { await api.delete(`/users/${u._id}`); fetchUsuarios(); }
+      try { await api.delete(`/users/${u._id}`); fetchUsuarios(); notifyLocal("Usuario eliminado", `${u.nombre} fue eliminado.`); }
       catch { setError("Error al eliminar usuario."); }
     });
   };
@@ -145,7 +150,7 @@ const Usuarios: React.FC = () => {
   const toggleEstatus = async (u: Usuario) => {
     if (ROL_ACTUAL === "admin" && u.rol === "superadmin") { setError("Sin permisos para cambiar estatus de Super Admins."); return; }
     const accion = u.estatus === "activo" ? "deactivate" : "activate";
-    try { await api.patch(`/users/${u._id}/${accion}`); fetchUsuarios(); }
+    try { await api.patch(`/users/${u._id}/${accion}`); fetchUsuarios(); notifyLocal("Estatus actualizado", `${u.nombre} fue ${accion === 'deactivate' ? 'desactivado' : 'activado'}.`); }
     catch { /* silencioso */ }
   };
 

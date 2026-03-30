@@ -4,46 +4,35 @@ import { BrowserRouter } from "react-router-dom";
 import "./index.css";
 import App from "./App";
 import { ThemeProvider } from "./context/ThemeContext";
+import { suscribirPush } from "./utils/notify.ts";
 
-/* ============================
-   SERVICE WORKER + NOTIFICACIONES
-============================ */
-
-// Solo registrar SW en producción, no en desarrollo (permite hot reload)
-if ('serviceWorker' in navigator && import.meta.env.PROD) {
+// ─────────────────────────────────────────
+//  SERVICE WORKER
+// ─────────────────────────────────────────
+if ('serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
     try {
       const reg = await navigator.serviceWorker.register('/sw.js');
-      console.log('Service Worker registrado correctamente');
-
-      // Escuchar cuando hay una nueva versión disponible
-      reg.addEventListener('updatefound', () => {
-        const newWorker = reg.installing;
-        console.log('Nueva versión del SW disponible');
-        
-        newWorker?.addEventListener('statechange', () => {
-          if (newWorker.state === 'activated') {
-            console.log('Recargando para aplicar nueva versión...');
-            window.location.reload();
-          }
-        });
-      });
+      console.log('✅ Service Worker registrado');
 
       // Pedir permiso para notificaciones
       if ('Notification' in window) {
-        await Notification.requestPermission();
+        const permiso = await Notification.requestPermission();
+        console.log('🔔 Permiso notificaciones:', permiso);
+        if (permiso === 'granted') {
+          await suscribirPush();
+        }
       }
 
     } catch (error) {
-      console.error('Error al registrar el Service Worker:', error);
+      console.error('❌ Error al registrar el Service Worker:', error);
     }
   });
 }
 
-/* ============================
-   RENDER DE LA APP
-============================ */
-
+// ─────────────────────────────────────────
+//  RENDER
+// ─────────────────────────────────────────
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>

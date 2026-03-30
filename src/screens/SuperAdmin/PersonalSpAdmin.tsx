@@ -14,6 +14,7 @@ import Paginacion from "../../components/Paginacion";
 import ImageUploader from "../../components/ImageUploader";
 import { getUserById, updateUser, deleteUser } from "../../api/users";
 import { exportPersonalPDF } from "../../utils/pdfExport";
+import { notifyLocal } from "../../utils/notify.ts";
 
 /* ─── Tipos ─── */
 interface Personal {
@@ -354,14 +355,24 @@ const PersonalSpAdmin: React.FC = () => {
       setShowCuentaModal(false);
       cerrarModal();
       fetchPersonal();
+      notifyLocal(
+        modoEdicion ? "Personal actualizado" : "Personal registrado",
+        modoEdicion
+          ? `${data.nombre} ${data.apellidoPaterno} fue actualizado correctamente.`
+          : `${data.nombre} ${data.apellidoPaterno} fue registrado correctamente.`
+      );
     } catch (err: any) {
       setModalError(err.response?.data?.message || err.response?.data?.error || "Error al guardar.");
     } finally { setSaving(false); }
   };
 
   const eliminar = async (id: string) => {
+    const found = personal.find(p => p._id === id);
     confirmar("¿Eliminar este registro permanentemente? Esta acción no se puede deshacer.", async () => {
-      try { await api.delete(`/personal/${id}`); fetchPersonal(); }
+      try {
+        await api.delete(`/personal/${id}`); fetchPersonal();
+        notifyLocal("Personal eliminado", found ? `${found.nombre} ${found.apellidoPaterno} fue eliminado.` : "Registro eliminado.");
+      }
       catch { setModalError("Error al eliminar."); }
     });
   };
@@ -370,6 +381,7 @@ const PersonalSpAdmin: React.FC = () => {
     try {
       await api.put(`/personal/${p._id}`, { estatus: p.estatus === "activo" ? "inactivo" : "activo" });
       fetchPersonal();
+      notifyLocal("Estatus actualizado", `${p.nombre} ${p.apellidoPaterno} fue ${p.estatus === "activo" ? "desactivado" : "activado"}.`);
     } catch { /* silencioso */ }
   };
 

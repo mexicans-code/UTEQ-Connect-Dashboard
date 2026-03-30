@@ -3,6 +3,7 @@ import "../../styles/EdificiosRutas.css";
 import NavSpAdmin from "../components/NavSpAdmin";
 import { Pencil, Trash2, Plus, X, Search, LayoutGrid, FileDown } from "lucide-react";
 import { API_URL } from "../../api/config";
+import { notifyLocal } from "../../utils/notify.ts";
 import ConfirmModal from "../../components/ConfirmModal";
 import Paginacion from "../../components/Paginacion";
 import ImageUploader from "../../components/ImageUploader";
@@ -130,13 +131,17 @@ const Espacios: React.FC = () => {
         await apiFetch("/espacios", { method: "POST", body });
       }
       cerrarModal(); fetchEspacios();
+      notifyLocal(
+        editingId ? "Espacio actualizado" : "Espacio creado",
+        editingId ? `"${form.nombre.trim()}" fue actualizado correctamente.` : `"${form.nombre.trim()}" fue creado correctamente.`
+      );
     } catch (e: any) { setModalError(e.message || "Error al guardar."); }
     finally { setSaving(false); }
   };
 
   const eliminar = async (e: Espacio) => {
     confirmar(`¿Eliminar "${e.nombre}"? Esta acción no se puede deshacer.`, async () => {
-      try { await apiFetch(`/espacios/${e._id}`, { method: "DELETE" }); fetchEspacios(); }
+      try { await apiFetch(`/espacios/${e._id}`, { method: "DELETE" }); fetchEspacios(); notifyLocal("Espacio eliminado", `"${e.nombre}" fue eliminado.`); }
       catch { setError("Error al eliminar."); }
     });
   };
@@ -147,6 +152,7 @@ const Espacios: React.FC = () => {
         method: "PATCH", body: JSON.stringify({ ocupado: !e.ocupado })
       });
       fetchEspacios();
+      notifyLocal("Espacio actualizado", `"${e.nombre}" fue marcado como ${e.ocupado ? "disponible" : "ocupado"}.`);
     } catch { /* silencioso */ }
   };
 
