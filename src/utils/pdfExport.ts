@@ -183,7 +183,7 @@ export function exportUsuariosPDF(usuarios: any[], rolActual?: string) {
       if (data.section === "body" && data.column.index === 3) {
         const val = data.cell.text[0]?.toLowerCase();
         const color = val === "activo" ? [22,163,74] : [220,38,38];
-        doc.setTextColor(...color);
+        doc.setTextColor(...(color as [number,number,number]));
         doc.setFontSize(8);
         doc.setFont("helvetica", "bold");
         doc.text(data.cell.text[0], data.cell.x + data.cell.padding("left"),
