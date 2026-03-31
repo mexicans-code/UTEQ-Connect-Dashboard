@@ -109,7 +109,6 @@ const Usuarios: React.FC = () => {
     try {
       if (modoEdicion && usuarioActual) {
         const body: any = { nombre: formData.nombre, email: formData.email, rol: formData.rol, estatus: formData.estatus };
-        if (formData.password) body.password = formData.password;
         await api.put(`/users/${usuarioActual._id}`, body);
       } else {
         await api.post("/auth/register-admin", {
@@ -321,7 +320,9 @@ const Usuarios: React.FC = () => {
             <div className="modal-body">
               <input type="text"     name="nombre"   placeholder="Nombre completo" autoComplete="off"                                                        value={formData.nombre}   onChange={handleChange} />
               <input type="email"    name="email"    placeholder="Correo electrónico" autoComplete="off"                                                      value={formData.email}    onChange={handleChange} />
-              <input type="password" name="password" placeholder={modoEdicion ? "Nueva contraseña (vacío = sin cambio)" : "Contraseña *"} autoComplete="new-password" value={formData.password} onChange={handleChange} />
+              {!modoEdicion && (
+                <input type="password" name="password" placeholder="Contraseña *" autoComplete="new-password" value={formData.password} onChange={handleChange} />
+              )}
 
               {/* Roles disponibles según tipo de admin */}
               <select name="rol" value={formData.rol} onChange={handleChange}>
