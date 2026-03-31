@@ -8,7 +8,6 @@ import ImageUploader from "../../components/ImageUploader";
 import api from "../../api/axios";
 import ConfirmModal from "../../components/ConfirmModal";
 import { exportEdificiosPDF } from "../../utils/pdfExport";
-import { notifyLocal } from "../../utils/notify.ts";
 
 interface Ubicacion {
   _id: string;
@@ -96,7 +95,6 @@ const Gestion_Ubicaciones: React.FC = () => {
     try {
       await api.put(`/locations/${actual._id}`, body);
       cerrarModal(); fetchUbicaciones();
-      notifyLocal("Ubicación actualizada", `"${body.nombre}" fue actualizada correctamente.`);
     } catch (e: any) {
       setModalError(e.response?.data?.error || "Error al guardar.");
     } finally { setSaving(false); }
@@ -108,7 +106,6 @@ const Gestion_Ubicaciones: React.FC = () => {
         await api.delete(`/locations/${u._id}`);
         if (activeId === u._id) setActiveId(null);
         fetchUbicaciones();
-        notifyLocal("Ubicación eliminada", `"${u.nombre}" fue eliminada.`);
       } catch { setModalError("Error al eliminar ubicación."); }
     });
   };
