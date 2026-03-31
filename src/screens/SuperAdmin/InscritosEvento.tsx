@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-import "../../styles/InscritosEvento.css";
+import "../../styles/InscritosEvento.css"; // ← este sería correcto
 import NavSpAdmin from "../components/NavSpAdmin";
 import {
     Users, Calendar, MapPin, Clock,
