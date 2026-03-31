@@ -1,6 +1,5 @@
 const CACHE_NAME = 'uteq-connect-v1';
 
-// Archivos del shell de la app que se cachean al instalar
 const FILES_TO_CACHE = [
   '/',
   '/index.html',
@@ -10,10 +9,9 @@ const FILES_TO_CACHE = [
   '/icons/icon-512x512.png'
 ];
 
-/* ============================
-   INSTALL — cachear el shell
-============================ */
-
+// ─────────────────────────────────────────
+//  INSTALL
+// ─────────────────────────────────────────
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -22,42 +20,36 @@ self.addEventListener('install', event => {
   );
 });
 
-/* ============================
-   ACTIVATE — limpiar caches viejos
-============================ */
-
+// ─────────────────────────────────────────
+//  ACTIVATE — limpiar cachés viejos
+// ─────────────────────────────────────────
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(keys => {
-      return Promise.all(
+    caches.keys().then(keys =>
+      Promise.all(
         keys.map(key => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
+          if (key !== CACHE_NAME) return caches.delete(key);
         })
-      );
-    }).then(() => self.clients.claim())
+      )
+    ).then(() => self.clients.claim())
   );
 });
 
-/* ============================
-   FETCH — estrategia por tipo
-============================ */
-
+// ─────────────────────────────────────────
+//  FETCH
+//  Online  → sirve caché inmediato + actualiza en background
+//  Offline → caché, si no hay → offline.html
+// ─────────────────────────────────────────
 self.addEventListener('fetch', event => {
-  const url = new URL(event.request.url);
-
-  // Ignorar peticiones no-GET
   if (event.request.method !== 'GET') return;
+  if (!event.request.url.startsWith('http')) return;
 
-  // ── Llamadas al API → Network First ──
-  // Si hay red, trae datos frescos y los cachea.
-  // Si no hay red, devuelve lo que haya en caché.
-  if (url.port === '3000' || url.pathname.startsWith('/api/')) {
+  // API del servidor → siempre red, fallback caché
+  if (event.request.url.includes(':3000') || event.request.url.includes('/api/')) {
     event.respondWith(
       fetch(event.request)
         .then(response => {
-          const clone = response.clone();
+          const clone = response.clone(); // clonar ANTES de usar
           caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
           return response;
         })
@@ -66,62 +58,60 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // ── Resto (JS, CSS, imágenes, HTML) → Cache First ──
-  // Sirve desde caché si existe; si no, va a la red y cachea.
-  // Si falla la red y no hay caché → página offline.
+  // App shell → Stale While Revalidate
   event.respondWith(
     caches.match(event.request).then(cached => {
-      if (cached) return cached;
-
-      return fetch(event.request)
+      const fetchPromise = fetch(event.request)
         .then(response => {
-          const clone = response.clone();
+          const clone = response.clone(); // clonar ANTES de usar
           caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
           return response;
         })
         .catch(() => {
-          // Navegación sin conexión → offline.html
-          if (event.request.mode === 'navigate') {
+          if (!cached && event.request.mode === 'navigate') {
             return caches.match('/offline.html');
           }
         });
+
+      return cached || fetchPromise;
     })
   );
 });
 
-/* ============================
-   PUSH NOTIFICATIONS
-============================ */
-
+// ─────────────────────────────────────────
+//  PUSH NOTIFICATIONS
+// ─────────────────────────────────────────
 self.addEventListener('push', event => {
-  if (!event.data) return;
+  let data = { title: 'UTEQ Connect', body: 'Tienes una nueva notificación.' };
 
-  let data = {};
-  try { data = event.data.json(); }
-  catch { data = { title: 'UTEQ Connect', body: event.data.text() }; }
+  if (event.data) {
+    try { data = { ...data, ...event.data.json() }; }
+    catch { data.body = event.data.text(); }
+  }
 
   event.waitUntil(
-    self.registration.showNotification(data.title || 'UTEQ Connect', {
-      body:  data.body  || 'Tienes una nueva notificación',
-      icon:  '/icons/icon-192x192.png',
-      badge: '/icons/icon-72x72.png',
-      tag:   data.tag   || 'uteq-notif',
-      data:  { url: data.url || '/' }
+    self.registration.showNotification(data.title, {
+      body:     data.body,
+      icon:     '/icons/icon-192x192.png',
+      badge:    '/icons/icon-72x72.png',
+      vibrate:  [200, 100, 200],
+      tag:      'uteq-push-' + Date.now(),
+      renotify: true,
+      data:     { url: data.url || '/' }
     })
   );
 });
 
-/* ============================
-   CLICK EN NOTIFICACIÓN
-============================ */
-
+// ─────────────────────────────────────────
+//  CLICK EN NOTIFICACIÓN
+// ─────────────────────────────────────────
 self.addEventListener('notificationclick', event => {
   event.notification.close();
   const url = event.notification.data?.url || '/';
 
   event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientList => {
-      for (const client of clientList) {
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+      for (const client of list) {
         if (client.url.includes(self.location.origin) && 'focus' in client) {
           client.navigate(url);
           return client.focus();
@@ -132,21 +122,19 @@ self.addEventListener('notificationclick', event => {
   );
 });
 
-/* ============================
-   MENSAJES DESDE LA APP
-============================ */
-
+// ─────────────────────────────────────────
+//  MENSAJES DESDE LA APP
+// ─────────────────────────────────────────
 self.addEventListener('message', event => {
-  // La app le avisa al SW que hay una nueva versión lista
   if (event.data?.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
 
-  // Notificación desde la app (igual que el ejemplo del profe)
   if (event.data?.type === 'NOTIFY_SAVE') {
-    self.registration.showNotification('UTEQ Connect', {
-      body: event.data.message || 'Cambios guardados',
-      icon: '/icons/icon-192x192.png'
+    self.registration.showNotification(event.data.title || 'UTEQ Connect', {
+      body:  event.data.message || 'Cambios guardados',
+      icon:  '/icons/icon-192x192.png',
+      badge: '/icons/icon-72x72.png',
     });
   }
 });

@@ -3,6 +3,7 @@ import "../../styles/EdificiosRutas.css";
 import NavSpAdmin from "../components/NavSpAdmin";
 import { Pencil, Trash2, X, Search, MapPin, FileDown } from "lucide-react";
 import ImageUploader from "../../components/ImageUploader";
+import { notifyLocal } from "../../utils/notify.ts";
 import { API_URL } from "../../api/config";
 import api from "../../api/axios";
 import ConfirmModal from "../../components/ConfirmModal";
@@ -134,6 +135,7 @@ const EdificiosRutas: React.FC = () => {
     try {
       await apiFetch(`/locations/${actual._id}`, { method: "PUT", body });
       cerrarModal(); fetchDestinos();
+      notifyLocal("Edificio actualizado", `"${formData.nombre.trim()}" fue actualizado correctamente.`);
     } catch (e: any) {
       setModalError(e.message || "Error al guardar.");
     } finally {
@@ -146,6 +148,7 @@ const EdificiosRutas: React.FC = () => {
       try {
         await apiFetch(`/locations/${d._id}`, { method: "DELETE" });
         fetchDestinos();
+        notifyLocal("Edificio eliminado", `"${d.nombre}" fue eliminado.`);
       } catch {
         setModalError("Error al eliminar la ubicación.");
       }

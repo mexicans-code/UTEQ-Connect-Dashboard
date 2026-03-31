@@ -4,6 +4,7 @@ import NavSpAdmin from "../components/NavSpAdmin";
 import { Pencil, Ban, Trash2, Plus, X, CheckCircle, Search, FileDown } from "lucide-react";
 import api from "../../api/axios";
 import { exportUsuariosPDF } from "../../utils/pdfExport";
+import { notifyLocal } from "../../utils/notify.ts";
 
 interface Usuario {
   _id: string;
@@ -120,6 +121,10 @@ const Usuarios: React.FC = () => {
         });
       }
       cerrarModal(); fetchUsuarios();
+      notifyLocal(
+        modoEdicion ? "Usuario actualizado" : "Usuario creado",
+        modoEdicion ? `${formData.nombre} fue actualizado.` : `${formData.nombre} fue creado correctamente.`
+      );
     } catch (err: any) { setError(err.response?.data?.error || "Error al guardar usuario."); }
     finally { setSaving(false); }
   };
@@ -127,14 +132,14 @@ const Usuarios: React.FC = () => {
   const eliminarUsuario = async (u: Usuario) => {
     if (ROL_ACTUAL === "admin" && u.rol === "superadmin") { alert("Sin permisos para eliminar Super Admins."); return; }
     if (!confirm(`¿Eliminar permanentemente a ${u.nombre}?`)) return;
-    try { await api.delete(`/users/${u._id}`); fetchUsuarios(); }
+    try { await api.delete(`/users/${u._id}`); fetchUsuarios(); notifyLocal("Usuario eliminado", `${u.nombre} fue eliminado.`); }
     catch { alert("Error al eliminar usuario."); }
   };
 
   const toggleEstatus = async (u: Usuario) => {
     if (ROL_ACTUAL === "admin" && u.rol === "superadmin") { alert("Sin permisos para cambiar estatus de Super Admins."); return; }
     const accion = u.estatus === "activo" ? "deactivate" : "activate";
-    try { await api.patch(`/users/${u._id}/${accion}`); fetchUsuarios(); }
+    try { await api.patch(`/users/${u._id}/${accion}`); fetchUsuarios(); notifyLocal("Estatus actualizado", `${u.nombre} fue ${accion === 'deactivate' ? 'desactivado' : 'activado'}.`); }
     catch { alert("Error al cambiar estatus."); }
   };
 
