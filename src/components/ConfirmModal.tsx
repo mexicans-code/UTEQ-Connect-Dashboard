@@ -20,9 +20,9 @@ const ConfirmModal: React.FC<Props> = ({
   if (!open) return null;
 
   const colores = {
-    danger: { bg: "#fee2e2", icon: "#dc2626", btn: "#dc2626", hover: "#b91c1c" },
+    danger:  { bg: "#fee2e2", icon: "#dc2626", btn: "#dc2626", hover: "#b91c1c" },
     warning: { bg: "#fef9c3", icon: "#d97706", btn: "#d97706", hover: "#b45309" },
-    info: { bg: "#dbeafe", icon: "#2563eb", btn: "#2563eb", hover: "#1d4ed8" },
+    info:    { bg: "#dbeafe", icon: "#2563eb", btn: "#2563eb", hover: "#1d4ed8" },
   }[variante];
 
   return (
