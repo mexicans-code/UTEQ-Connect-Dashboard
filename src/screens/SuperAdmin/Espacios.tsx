@@ -1,26 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import "../../styles/EdificiosRutas.css";
-import NavSpAdmin from "../components/NavSpAdmin";
-import { Pencil, Trash2, Plus, X, Search, LayoutGrid, FileDown } from "lucide-react";
-import { API_URL } from "../../api/config";
+import "../../styles/tabla.css";
+import NavSidebar from "../components/NavSidebar";
+import PageTopbar from "../components/PageTopbar.tsx";
+import { Pencil, Plus, X, Search, LayoutGrid } from "lucide-react";
 import { notifyLocal } from "../../utils/notify.ts";
-import ConfirmModal from "../../components/ConfirmModal";
-import Paginacion from "../../components/Paginacion";
-import ImageUploader from "../../components/ImageUploader";
-import api from "../../api/axios";
+import Paginacion from "../components/Paginacion.tsx";
+import { getEspacios, createEspacio, updateEspacio, toggleOcupadoEspacio, type Espacio, type EspacioDestino } from "../../api/espacios";
+type Destino = EspacioDestino;
+import { getLocations } from "../../api/locations";
 import { exportEspaciosPDF } from "../../utils/pdfExport";
+import FormField from "../components/ui/FormField";
+import AppModal from "../components/shared/AppModal";
+import { useConfirm } from "../../hooks/useConfirm";
+import { FIELD_LIMITS, validateField } from "../../utils/fieldLimits";
 
-interface Destino { _id: string; nombre: string; }
-interface Espacio {
-  _id: string;
-  nombre: string;
-  destino?: Destino | string;
-  cupos: number;
-  planta: string;
-  descripcion?: string;
-  ocupado?: boolean;
-  image?: string;
-}
 interface FormData {
   nombre: string;
   destino: string;
@@ -28,65 +22,61 @@ interface FormData {
   planta: string;
   descripcion: string;
 }
+interface FormErrors {
+  nombre?: string;
+  destino?: string;
+  planta?: string;
+  cupos?: string;
+  descripcion?: string;
+}
+
 const EMPTY_FORM: FormData = { nombre: "", destino: "", cupos: "", planta: "", descripcion: "" };
 
-const apiFetch = async (path: string, options: RequestInit = {}) => {
-  const token = localStorage.getItem("token");
-  const res = await fetch(`${API_URL}${path}`, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(options.headers || {}),
-    },
-  });
-  if (res.status === 401) { localStorage.clear(); window.location.href = "/"; }
-  const data = await res.json();
-  if (!res.ok) throw new Error(data?.error || "Error en la petición");
-  return data;
-};
-
 const Espacios: React.FC = () => {
-  const [espacios, setEspacios]           = useState<Espacio[]>([]);
-  const [destinos, setDestinos]           = useState<Destino[]>([]);
-  const [loading, setLoading]             = useState(true);
-  const [error, setError]                 = useState("");
-  const [busqueda, setBusqueda]           = useState("");
+  const [espacios, setEspacios] = useState<Espacio[]>([]);
+  const [destinos, setDestinos] = useState<Destino[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [busqueda, setBusqueda] = useState("");
   const [filtroDestino, setFiltroDestino] = useState("");
 
-  const [showModal, setShowModal]   = useState(false);
-  const [editingId, setEditingId]   = useState<string | null>(null);
-  const [form, setForm]             = useState<FormData>(EMPTY_FORM);
+  const [showModal, setShowModal] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [form, setForm] = useState<FormData>(EMPTY_FORM);
+  const [formErrors, setFormErrors] = useState<FormErrors>({});
   const [modalError, setModalError] = useState("");
-  const [saving, setSaving]         = useState(false);
-  const [pagina, setPagina]         = useState(1);
+  const [saving, setSaving] = useState(false);
+  const [pagina, setPagina] = useState(1);
   const POR_PAGINA = 10;
-  const [uploadingImg, setUploadingImg] = useState(false);
-  const [confirmOpen, setConfirmOpen]   = useState(false);
-  const [confirmMsg, setConfirmMsg]     = useState("");
-  const [confirmFn, setConfirmFn]       = useState<() => void>(() => () => {});
-  const confirmar = (msg: string, fn: () => void) => { setConfirmMsg(msg); setConfirmFn(() => fn); setConfirmOpen(true); };
+
+  const confirm = useConfirm();
+
+  const refNombre = useRef<HTMLDivElement>(null);
+  const refDestino = useRef<HTMLDivElement>(null);
+  const refPlanta = useRef<HTMLDivElement>(null);
+  const refCupos = useRef<HTMLDivElement>(null);
+  const refDescripcion = useRef<HTMLDivElement>(null);
+  const modalBodyRef = useRef<HTMLDivElement>(null);
 
   const fetchEspacios = async () => {
     setLoading(true); setError("");
     try {
-      const data = await apiFetch("/espacios");
-      setEspacios(Array.isArray(data) ? data : (data.data || []));
+      const data = await getEspacios();
+      setEspacios(data);
     } catch (e: any) { setError(e.message); }
     finally { setLoading(false); }
   };
 
   const fetchDestinos = async () => {
     try {
-      const data = await apiFetch("/locations");
-      setDestinos(Array.isArray(data) ? data : (data.data || []));
-    } catch {}
+      const data = await getLocations();
+      setDestinos(data.map(l => ({ _id: l._id, nombre: l.nombre })));
+    } catch { }
   };
 
   useEffect(() => { fetchEspacios(); fetchDestinos(); }, []);
 
-  const espaciosFiltrados = React.useMemo(() => {
-    setPagina(1);
+  const espaciosFiltrados = useMemo(() => {
     return espacios.filter(e => {
       const matchBusq = !busqueda || e.nombre.toLowerCase().includes(busqueda.toLowerCase());
       const matchDest = !filtroDestino || (typeof e.destino === "object" ? e.destino?._id : e.destino) === filtroDestino;
@@ -94,11 +84,17 @@ const Espacios: React.FC = () => {
     });
   }, [espacios, busqueda, filtroDestino]);
 
-  const espaciosPagina = React.useMemo(() => espaciosFiltrados.slice((pagina-1)*POR_PAGINA, pagina*POR_PAGINA), [espaciosFiltrados, pagina]);
+  useEffect(() => { setPagina(1); }, [busqueda, filtroDestino]);
+
+  const espaciosPagina = useMemo(
+    () => espaciosFiltrados.slice((pagina - 1) * POR_PAGINA, pagina * POR_PAGINA),
+    [espaciosFiltrados, pagina]
+  );
 
   const abrirAgregar = () => {
-    setEditingId(null); setForm(EMPTY_FORM); setModalError(""); setShowModal(true);
+    setEditingId(null); setForm(EMPTY_FORM); setFormErrors({}); setModalError(""); setShowModal(true);
   };
+
   const abrirEditar = (e: Espacio) => {
     setEditingId(e._id);
     setForm({
@@ -108,72 +104,78 @@ const Espacios: React.FC = () => {
       planta: e.planta,
       descripcion: e.descripcion || "",
     });
-    setModalError(""); setShowModal(true);
+    setFormErrors({}); setModalError(""); setShowModal(true);
   };
-  const cerrarModal = () => { setShowModal(false); setModalError(""); };
+
+  const cerrarModal = () => { setShowModal(false); setFormErrors({}); setModalError(""); };
+
+  const scrollToRef = (ref: React.RefObject<HTMLDivElement>) => {
+    setTimeout(() => {
+      ref.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      const el = ref.current?.querySelector("input, select") as HTMLElement | null;
+      el?.focus();
+    }, 50);
+  };
+
+  const validarForm = (): { ok: boolean; firstRef: React.RefObject<HTMLDivElement> | null } => {
+    const errors: FormErrors = {};
+    let firstRef: React.RefObject<HTMLDivElement> | null = null;
+
+    const errNombre = validateField(form.nombre, FIELD_LIMITS.nombreEspacio);
+    if (errNombre) { errors.nombre = errNombre; if (!firstRef) firstRef = refNombre; }
+
+    if (!form.destino) { errors.destino = "Debes seleccionar un edificio."; if (!firstRef) firstRef = refDestino; }
+
+    if (!form.planta) { errors.planta = "Debes seleccionar una planta."; if (!firstRef) firstRef = refPlanta; }
+
+    const cuposNum = parseInt(form.cupos, 10);
+    if (!form.cupos || isNaN(cuposNum) || cuposNum < 1) {
+      errors.cupos = "Los cupos deben ser un número entero mayor a 0.";
+      if (!firstRef) firstRef = refCupos;
+    }
+
+    const errDesc = validateField(form.descripcion, FIELD_LIMITS.descripcion);
+    if (errDesc) { errors.descripcion = errDesc; if (!firstRef) firstRef = refDescripcion; }
+
+    setFormErrors(errors);
+    return { ok: Object.keys(errors).length === 0, firstRef };
+  };
 
   const guardar = async () => {
-    if (!form.nombre || !form.destino || !form.cupos || !form.planta) {
-      setModalError("Nombre, destino, cupos y planta son obligatorios."); return;
-    }
+    const { ok, firstRef } = validarForm();
+    if (!ok) { if (firstRef) scrollToRef(firstRef); return; }
+
     setSaving(true); setModalError("");
-    const body = JSON.stringify({
-      nombre: form.nombre.trim(),
-      destino: form.destino,
-      cupos: parseInt(form.cupos),
-      planta: form.planta,
-      descripcion: form.descripcion || undefined,
-    });
     try {
+      const body = {
+        nombre: form.nombre.trim(),
+        destino: form.destino,
+        cupos: parseInt(form.cupos, 10),
+        planta: form.planta,
+        descripcion: form.descripcion.trim(),
+      };
       if (editingId) {
-        await apiFetch(`/espacios/${editingId}`, { method: "PUT", body });
+        await updateEspacio(editingId, body);
       } else {
-        await apiFetch("/espacios", { method: "POST", body });
+        await createEspacio(body);
       }
       cerrarModal(); fetchEspacios();
       notifyLocal(
         editingId ? "Espacio actualizado" : "Espacio creado",
-        editingId ? `"${form.nombre.trim()}" fue actualizado correctamente.` : `"${form.nombre.trim()}" fue creado correctamente.`
+        editingId
+          ? `"${form.nombre.trim()}" fue actualizado correctamente.`
+          : `"${form.nombre.trim()}" fue creado correctamente.`
       );
-    } catch (e: any) { setModalError(e.message || "Error al guardar."); }
+    } catch (e: any) { setModalError(e.response?.data?.error || e.message || "Error al guardar."); }
     finally { setSaving(false); }
-  };
-
-  const eliminar = async (e: Espacio) => {
-    confirmar(`¿Eliminar "${e.nombre}"? Esta acción no se puede deshacer.`, async () => {
-      try { await apiFetch(`/espacios/${e._id}`, { method: "DELETE" }); fetchEspacios(); notifyLocal("Espacio eliminado", `"${e.nombre}" fue eliminado.`); }
-      catch { setError("Error al eliminar."); }
-    });
   };
 
   const toggleOcupado = async (e: Espacio) => {
     try {
-      await apiFetch(`/espacios/${e._id}/ocupado`, {
-        method: "PATCH", body: JSON.stringify({ ocupado: !e.ocupado })
-      });
+      await toggleOcupadoEspacio(e._id, !e.ocupado);
       fetchEspacios();
       notifyLocal("Espacio actualizado", `"${e.nombre}" fue marcado como ${e.ocupado ? "disponible" : "ocupado"}.`);
-    } catch { /* silencioso */ }
-  };
-
-  const subirImagenEspacio = async (id: string, file: File) => {
-    setUploadingImg(true);
-    try {
-      const fd = new FormData();
-      fd.append("image", file);
-      await api.post(`/espacios/${id}/image`, fd, { headers: { "Content-Type": "multipart/form-data" } });
-      fetchEspacios();
-    } catch { setModalError("Error al subir la imagen."); }
-    finally { setUploadingImg(false); }
-  };
-
-  const eliminarImagenEspacio = async (id: string) => {
-    setUploadingImg(true);
-    try {
-      await api.delete(`/espacios/${id}/image`);
-      fetchEspacios();
-    } catch { setModalError("Error al eliminar la imagen."); }
-    finally { setUploadingImg(false); }
+    } catch { }
   };
 
   const getNombreDestino = (destino: Destino | string | undefined) => {
@@ -181,34 +183,26 @@ const Espacios: React.FC = () => {
     return typeof destino === "object" ? destino.nombre : "—";
   };
 
+  const errStyle = (hasErr: boolean): React.CSSProperties =>
+    hasErr ? { border: "1.5px solid #f87171", outline: "none" } : {};
+
+  const clearErr = (field: keyof FormErrors) => {
+    if (formErrors[field]) setFormErrors(prev => ({ ...prev, [field]: undefined }));
+  };
+
   return (
     <div className="spadmin-container">
-      <NavSpAdmin />
+      <NavSidebar rol="superadmin" />
 
       <div className="spadmin-main-content">
-        {/* ── Header ── */}
-        <header className="spadmin-topbar" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div>
-            <h1>Gestión de Espacios</h1>
-            <p>{espacios.length} aula(s) y espacio(s) registrado(s)</p>
-          </div>
-          <button
-            onClick={() => exportEspaciosPDF(espaciosFiltrados)}
-            title="Descargar PDF"
-            style={{
-              display: "flex", alignItems: "center", gap: 6,
-              padding: "9px 14px", borderRadius: "var(--radius-sm)",
-              background: "#e53e3e", color: "#fff", border: "none",
-              cursor: "pointer", fontSize: "0.85rem", fontWeight: 600,
-            }}
-          >
-            <FileDown size={15} /> Descargar PDF
-          </button>
-        </header>
+        <PageTopbar
+          title="Gestión de Espacios"
+          subtitle={`${espacios.length} aula(s) y espacio(s) registrado(s)`}
+          onDownloadPDF={() => exportEspaciosPDF(espaciosFiltrados)}
+        />
 
         <div className="spadmin-content-area">
 
-          {/* ── Toolbar ── */}
           <div className="edr-toolbar">
             <div className="edr-search-wrapper">
               <Search size={15} />
@@ -221,15 +215,9 @@ const Espacios: React.FC = () => {
               />
             </div>
 
-            <select
-              className="edr-select"
-              value={filtroDestino}
-              onChange={e => setFiltroDestino(e.target.value)}
-            >
+            <select className="edr-select" value={filtroDestino} onChange={e => setFiltroDestino(e.target.value)}>
               <option value="">Todos los edificios</option>
-              {destinos.map(d => (
-                <option key={d._id} value={d._id}>{d.nombre}</option>
-              ))}
+              {destinos.map(d => <option key={d._id} value={d._id}>{d.nombre}</option>)}
             </select>
 
             {(busqueda || filtroDestino) && (
@@ -238,47 +226,43 @@ const Espacios: React.FC = () => {
               </button>
             )}
 
-            <span className="edr-count">
-              {espaciosFiltrados.length} de {espacios.length} espacios
-            </span>
+            <span className="edr-count">{espaciosFiltrados.length} de {espacios.length} espacios</span>
 
-            <button className="edr-btn-agregar" onClick={abrirAgregar}>
+            <button data-action className="ut-btn-detail" onClick={abrirAgregar}>
               <Plus size={16} /> Agregar Espacio
             </button>
           </div>
 
-          {/* ── Error ── */}
           {error && <div className="edr-error">{error}</div>}
 
-          {/* ── Tabla ── */}
           {loading ? (
-            <p style={{ color: "var(--gray-400)", padding: 24, fontFamily: "var(--font-sans)" }}>
-              Cargando espacios...
-            </p>
+            <p style={{ color: "var(--gray-400)", padding: 24, fontFamily: "var(--font-sans)" }}>Cargando espacios...</p>
           ) : (
-            <div className="edr-table-wrapper">
-              <table className="edr-table">
+            <div className="ut-table-wrapper">
+              <table className="ut-table">
                 <thead>
                   <tr>
-                    <th style={{ width: 60 }}>Imagen</th>
                     <th>Nombre</th>
                     <th>Edificio / Destino</th>
-                    <th style={{ textAlign: "center" }}>Cupos</th>
-                    <th style={{ textAlign: "center" }}>Planta</th>
-                    <th style={{ textAlign: "center" }}>Estado</th>
-                    <th style={{ width: 100 }}>Acciones</th>
+                    <th className="ut-col-num">Cupos</th>
+                    <th className="ut-col-text" style={{ textAlign: "center" }}>Planta</th>
+                    <th className="ut-col-text" style={{ textAlign: "center" }}>Estado</th>
+                    <th className="ut-col-actions" style={{ width: 100 }}>Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
                   {espaciosFiltrados.length === 0 ? (
                     <tr>
                       <td colSpan={6}>
-                        <div className="edr-empty">
+                        <div className="ut-empty">
                           <LayoutGrid size={36} />
+                          <h3>
+                            {espacios.length === 0 ? "Sin espacios registrados" : "Sin resultados"}
+                          </h3>
                           <p>
                             {espacios.length === 0
-                              ? "Sin espacios registrados"
-                              : `Sin resultados para "${busqueda}"`}
+                              ? "Aún no has creado espacios."
+                              : `No hay coincidencias para "${busqueda}"`}
                           </p>
                         </div>
                       </td>
@@ -287,36 +271,22 @@ const Espacios: React.FC = () => {
                     espaciosPagina.map(e => (
                       <tr key={e._id}>
                         <td>
-                          {e.image ? (
-                            <img src={e.image} alt={e.nombre} style={{ width: 48, height: 36, objectFit: "cover", borderRadius: 6, border: "1px solid var(--border)" }} onError={ev => { (ev.target as HTMLImageElement).style.display = "none"; }} />
-                          ) : (
-                            <div style={{ width: 48, height: 36, background: "var(--gray-100)", borderRadius: 6, border: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                              <LayoutGrid size={14} color="var(--gray-400)" />
-                            </div>
-                          )}
-                        </td>
-                        <td>
                           <div className="edr-cell-nombre">
                             <strong>{e.nombre}</strong>
                             {e.descripcion && <span>{e.descripcion}</span>}
                           </div>
                         </td>
                         <td>
-                          <span className="edr-badge-destino">
-                            <Search size={10} style={{ opacity: 0 }} />
-                            {getNombreDestino(e.destino)}
-                          </span>
+                          <span className="edr-badge-destino">{getNombreDestino(e.destino)}</span>
                         </td>
                         <td style={{ textAlign: "center" }}>
-                          <span className="edr-badge-cupos">
-                            {e.cupos} personas
-                          </span>
+                          <span className="edr-badge-cupos">{e.cupos} personas</span>
                         </td>
                         <td style={{ textAlign: "center" }}>
                           <span className="edr-badge-planta">{e.planta}</span>
                         </td>
                         <td style={{ textAlign: "center" }}>
-                          <button
+                          <button data-action
                             onClick={() => toggleOcupado(e)}
                             className={`edr-estado-btn ${e.ocupado ? "edr-estado-ocupado" : "edr-estado-disponible"}`}
                           >
@@ -325,11 +295,8 @@ const Espacios: React.FC = () => {
                         </td>
                         <td>
                           <div className="acciones">
-                            <button className="btn-icon" onClick={() => abrirEditar(e)} title="Editar">
+                            <button data-action className="btn-icon" onClick={() => abrirEditar(e)} title="Editar">
                               <Pencil size={15} />
-                            </button>
-                            <button className="btn-icon delete" onClick={() => eliminar(e)} title="Eliminar">
-                              <Trash2 size={15} />
                             </button>
                           </div>
                         </td>
@@ -344,97 +311,91 @@ const Espacios: React.FC = () => {
         </div>
       </div>
 
-      {/* ══ Modal ══ */}
-      {showModal && (
-        <div className="modal-overlay">
-          <div className="modal-container">
-            <div className="modal-header">
-              <h3>{editingId ? "Editar Espacio" : "Agregar Espacio"}</h3>
-              <button onClick={cerrarModal}><X size={18} /></button>
-            </div>
-            <div className="modal-body">
+      <AppModal
+        open={showModal}
+        titulo={editingId ? "Editar Espacio" : "Agregar Espacio"}
+        onClose={cerrarModal}
+        onSave={guardar}
+        saving={saving}
+        saveText={editingId ? "Actualizar" : "Guardar"}
+        bodyRef={modalBodyRef}
+      >
+        <FormField
+          label="Nombre *"
+          limits={FIELD_LIMITS.nombreEspacio}
+          value={form.nombre}
+          error={formErrors.nombre}
+          containerRef={refNombre}
+        >
+          <input
+            placeholder="Ej. Aula 101, Sala de Cómputo"
+            value={form.nombre}
+            maxLength={FIELD_LIMITS.nombreEspacio.max}
+            style={errStyle(!!formErrors.nombre)}
+            onChange={e => { setForm({ ...form, nombre: e.target.value }); clearErr("nombre"); }}
+          />
+        </FormField>
 
-              <div>
-                <label className="modal-label">Nombre *</label>
-                <input
-                  placeholder="Ej. Aula 101, Sala de Cómputo"
-                  value={form.nombre}
-                  onChange={e => setForm({ ...form, nombre: e.target.value })}
-                />
-              </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                <div>
-                  <label className="modal-label">Edificio / Destino *</label>
-                  <select value={form.destino} onChange={e => setForm({ ...form, destino: e.target.value })}>
-                    <option value="">Selecciona un edificio</option>
-                    {destinos.map(d => <option key={d._id} value={d._id}>{d.nombre}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className="modal-label">Planta *</label>
-                  <select value={form.planta} onChange={e => setForm({ ...form, planta: e.target.value })}>
-                    <option value="">Selecciona planta</option>
-                    <option value="Planta baja">Planta baja</option>
-                    <option value="Planta alta">Planta alta</option>
-                    <option value="Planta única">Planta única</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="modal-label">Cupos *</label>
-                  <input
-                    type="number"
-                    min="1"
-                    placeholder="Capacidad máxima"
-                    value={form.cupos}
-                    onChange={e => setForm({ ...form, cupos: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <label className="modal-label">Descripción <span style={{ fontWeight: 400, textTransform: "none" }}>(opcional)</span></label>
-                  <input
-                    placeholder="Ej. Equipada con proyector"
-                    value={form.descripcion}
-                    onChange={e => setForm({ ...form, descripcion: e.target.value })}
-                  />
-                </div>
-              </div>
+          <FormField label="Edificio / Destino *" error={formErrors.destino} containerRef={refDestino}>
+            <select
+              value={form.destino}
+              style={errStyle(!!formErrors.destino)}
+              onChange={e => { setForm({ ...form, destino: e.target.value }); clearErr("destino"); }}
+            >
+              <option value="">Selecciona un edificio</option>
+              {destinos.map(d => <option key={d._id} value={d._id}>{d.nombre}</option>)}
+            </select>
+          </FormField>
 
-              {/* Imagen del espacio */}
-              {editingId && (
-                <div>
-                  <label className="modal-label">Imagen del espacio</label>
-                  <div style={{ marginTop: 6 }}>
-                    <ImageUploader
-                      currentImage={espacios.find(e => e._id === editingId)?.image}
-                      placeholder={<LayoutGrid size={24} color="var(--gray-400)" />}
-                      onUpload={file => subirImagenEspacio(editingId, file)}
-                      onDelete={() => eliminarImagenEspacio(editingId)}
-                      uploading={uploadingImg}
-                      shape="rect"
-                      size={120}
-                    />
-                  </div>
-                </div>
-              )}
+          <FormField label="Planta *" error={formErrors.planta} containerRef={refPlanta}>
+            <select
+              value={form.planta}
+              style={errStyle(!!formErrors.planta)}
+              onChange={e => { setForm({ ...form, planta: e.target.value }); clearErr("planta"); }}
+            >
+              <option value="">Selecciona planta</option>
+              <option value="Planta baja">Planta baja</option>
+              <option value="Planta alta">Planta alta</option>
+              <option value="Planta única">Planta única</option>
+            </select>
+          </FormField>
 
-              {modalError && <p className="modal-error">{modalError}</p>}
-            </div>
-            <div className="modal-footer">
-              <button className="btn-cancelar" onClick={cerrarModal}>Cancelar</button>
-              <button className="btn-guardar" onClick={guardar} disabled={saving}>
-                {saving ? "Guardando..." : editingId ? "Actualizar" : "Guardar"}
-              </button>
-            </div>
+          <FormField label="Cupos *" error={formErrors.cupos} containerRef={refCupos}>
+            <input
+              type="number"
+              min="1"
+              placeholder="Capacidad máxima"
+              value={form.cupos}
+              style={errStyle(!!formErrors.cupos)}
+              onKeyDown={e => { if ([".", ",", "e", "E", "+", "-"].includes(e.key)) e.preventDefault(); }}
+              onChange={e => { setForm({ ...form, cupos: e.target.value }); clearErr("cupos"); }}
+            />
+          </FormField>
+
+          <div style={{ gridColumn: "1 / -1" }}>
+            <FormField
+              label="Descripción *"
+              limits={FIELD_LIMITS.descripcion}
+              value={form.descripcion}
+              error={formErrors.descripcion}
+              containerRef={refDescripcion}
+            >
+              <input
+                placeholder="Ej. Equipada con proyector y aire acondicionado"
+                value={form.descripcion}
+                maxLength={FIELD_LIMITS.descripcion.max}
+                style={errStyle(!!formErrors.descripcion)}
+                onChange={e => { setForm({ ...form, descripcion: e.target.value }); clearErr("descripcion"); }}
+              />
+            </FormField>
           </div>
+
         </div>
-      )}
-      <ConfirmModal
-        open={confirmOpen}
-        mensaje={confirmMsg}
-        onConfirm={() => { setConfirmOpen(false); confirmFn(); }}
-        onCancel={() => setConfirmOpen(false)}
-      />
+
+        {modalError && <p className="modal-error">{modalError}</p>}
+      </AppModal>
     </div>
   );
 };

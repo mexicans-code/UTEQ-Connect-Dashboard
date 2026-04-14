@@ -2,36 +2,31 @@
 @import './variables.css';
 
 /* =====================================================
-   LOGIN - Card Based Login Screen
+   LOGIN - Dark Mode Ready
    ===================================================== */
 
 .login-card {
-  background: var(--white);
+  background: var(--bg-card);
   padding: 42px 40px 36px;
   border-radius: 20px;
   width: 100%;
   max-width: 420px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--border);
   position: relative;
   z-index: 10;
   animation: slideUp 0.4s ease-out;
 }
 
 @keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .login-card h2 {
   font-size: 1.7rem;
   font-weight: 800;
-  color: var(--gray-900);
+  color: var(--text-primary);
   margin: 0 0 8px;
   text-align: center;
   letter-spacing: -0.5px;
@@ -39,7 +34,7 @@
 
 .login-card .login-subtitle {
   font-size: 0.9rem;
-  color: var(--gray-500);
+  color: var(--text-muted);
   text-align: center;
   margin: 0 0 28px;
   font-weight: 500;
@@ -56,18 +51,18 @@
 .input-group label {
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--gray-700);
+  color: var(--text-secondary);
   letter-spacing: 0.3px;
 }
 
 .input-group input {
   padding: 12px 16px;
-  border: 1.5px solid var(--gray-300);
+  border: 1.5px solid var(--border-input);
   border-radius: 10px;
   font-size: 0.95rem;
   font-family: var(--font-sans);
-  color: var(--gray-800);
-  background: var(--white);
+  color: var(--text-primary);
+  background: var(--bg-input);
   transition: all 0.3s ease;
   width: 100%;
   box-sizing: border-box;
@@ -75,25 +70,25 @@
 
 .input-group input:hover {
   border-color: var(--gray-400);
-  background: var(--gray-50);
+  background: var(--bg-hover);
 }
 
 .input-group input:focus {
   outline: none;
-  border-color: var(--blue-500);
-  background: var(--white);
+  border-color: var(--border-focus);
+  background: var(--bg-input);
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
 }
 
 .input-group input::placeholder {
-  color: var(--gray-400);
+  color: var(--text-muted);
 }
 
 /* Error Message */
 .login-error {
-  background: #fee2e2;
-  border: 1px solid #fecaca;
-  color: #dc2626;
+  background: var(--red-50);
+  border: 1px solid var(--red-100);
+  color: var(--red-600);
   padding: 12px 14px;
   border-radius: 8px;
   font-size: 0.875rem;
@@ -134,22 +129,16 @@
   box-shadow: 0 6px 25px rgba(37, 99, 235, 0.5);
 }
 
-.login-button:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-.login-button:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
+.login-button:active:not(:disabled) { transform: translateY(0); }
+.login-button:disabled { opacity: 0.7; cursor: not-allowed; }
 
 /* Google Button */
 .google-button {
   width: 100%;
   padding: 12px;
-  background: var(--white);
-  color: var(--gray-700);
-  border: 1.5px solid var(--gray-300);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  border: 1.5px solid var(--border);
   border-radius: 10px;
   font-size: 0.95rem;
   font-weight: 600;
@@ -164,10 +153,11 @@
 }
 
 .google-button:hover {
-  background: var(--gray-50);
+  background: var(--bg-hover);
   border-color: var(--gray-400);
   transform: translateY(-1px);
 }
+
 .back-button {
   position: fixed;
   top: 20px;
@@ -196,27 +186,25 @@
   transform: translateY(-2px);
 }
 
-.back-button:active {
-  transform: translateY(0);
-}
+.back-button:active { transform: translateY(0); }
 
 /* Register Text */
 .register-text {
   font-size: 0.875rem;
-  color: var(--gray-600);
+  color: var(--text-secondary);
   text-align: center;
   margin-top: 20px;
 }
 
 .register-link {
-  color: var(--blue-600);
+  color: var(--primary);
   cursor: pointer;
   font-weight: 700;
   transition: all 0.3s ease;
 }
 
 .register-link:hover {
-  color: var(--blue-700);
+  color: var(--primary-hover);
   text-decoration: underline;
 }
 
@@ -227,31 +215,12 @@
     max-width: 100%;
     margin: 0 16px;
   }
-
-  .login-card h2 {
-    font-size: 1.5rem;
-    margin-bottom: 4px;
-  }
-
-  .input-group input {
-    padding: 11px 14px;
-    font-size: 0.9rem;
-  }
-
-  .login-button,
-  .google-button {
-    padding: 12px;
-    font-size: 0.9rem;
-  }
+  .login-card h2 { font-size: 1.5rem; margin-bottom: 4px; }
+  .input-group input { padding: 11px 14px; font-size: 0.9rem; }
+  .login-button, .google-button { padding: 12px; font-size: 0.9rem; }
 }
 
 @media (max-width: 360px) {
-  .login-card {
-    padding: 24px 16px;
-    border-radius: 16px;
-  }
-
-  .login-card h2 {
-    font-size: 1.3rem;
-  }
+  .login-card { padding: 24px 16px; border-radius: 16px; }
+  .login-card h2 { font-size: 1.3rem; }
 }

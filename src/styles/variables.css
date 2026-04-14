@@ -158,6 +158,11 @@
   --yellow-500:     #fbbf24;
   --yellow-600:     #fbbf24;
 
+  /* Azules en dark — blue-50 causa fondo blanco en tablas */
+  --blue-50:        #0d1b3e;
+  --blue-100:       #1a2d5a;
+  --blue-200:       #1e3a8a;
+
   /* Sidebar dark */
   --sidebar-bg:     #0d1117;
   --sidebar-active: #1c2d45;
@@ -169,4 +174,73 @@
   --shadow-md:  0 4px 12px rgba(0,0,0,0.5);
   --shadow-lg:  0 10px 30px rgba(0,0,0,0.6);
   --shadow-xl:  0 20px 50px rgba(0,0,0,0.7);
+}
+/* =====================================================
+   PAGE TOPBAR — componente compartido
+   ===================================================== */
+.page-topbar {
+  background: linear-gradient(135deg, var(--blue-700) 0%, var(--blue-800) 100%);
+  padding: 18px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.12);
+  flex-shrink: 0;
+}
+
+.page-topbar__left {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.page-topbar__title {
+  color: var(--white);
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -.2px;
+  line-height: 1.2;
+}
+
+.page-topbar__subtitle {
+  color: rgba(255,255,255,.55);
+  font-size: 0.82rem;
+  margin: 0;
+  font-weight: 400;
+}
+
+.page-topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.page-topbar__pdf-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--red-600);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: opacity 0.2s, transform 0.15s;
+  font-family: var(--font-sans);
+  white-space: nowrap;
+}
+.page-topbar__pdf-btn:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 640px) {
+  .page-topbar { padding: 14px 16px; }
+  .page-topbar__title { font-size: 1.05rem; }
+  .page-topbar__pdf-btn span { display: none; }
 }

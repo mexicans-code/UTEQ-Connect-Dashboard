@@ -1,14 +1,19 @@
 import React, { useState, useEffect, useMemo } from "react";
 import "../../styles/EdificiosRutas.css";
-import NavSpAdmin from "../components/NavSpAdmin";
-import { Pencil, Trash2, X, Search, MapPin, FileDown } from "lucide-react";
-import ImageUploader from "../../components/ImageUploader";
+import "../../styles/tabla.css";
+import NavSidebar from "../components/NavSidebar";
+import PageTopbar from "../components/PageTopbar";
+import { Pencil, X, Search, MapPin } from "lucide-react";
+import ImageUploader from "../components/ImageUploader.tsx";
 import { notifyLocal } from "../../utils/notify.ts";
-import { API_URL } from "../../api/config";
-import api from "../../api/axios";
-import ConfirmModal from "../../components/ConfirmModal";
-import Paginacion from "../../components/Paginacion";
+import { getLocations, updateLocation, uploadLocationImage, deleteLocationImage } from "../../api/locations";
+import ConfirmModal from "../components/ConfirmModal.tsx";
+import Paginacion from "../components/Paginacion.tsx";
 import { exportEdificiosPDF } from "../../utils/pdfExport";
+import AppModal from "../components/shared/AppModal";
+import { useConfirm } from "../../hooks/useConfirm";
+import FormField from "../components/ui/FormField";
+import { FIELD_LIMITS, validateField } from "../../utils/fieldLimits";
 
 interface Destino {
   _id: string;
@@ -25,22 +30,6 @@ interface FormData {
 
 const EMPTY_FORM: FormData = { nombre: "", latitude: "", longitude: "" };
 
-const apiFetch = async (path: string, options: RequestInit = {}) => {
-  const token = localStorage.getItem("token");
-  const res = await fetch(`${API_URL}${path}`, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(options.headers || {}),
-    },
-  });
-  if (res.status === 401) { localStorage.clear(); window.location.href = "/"; }
-  const data = await res.json();
-  if (!res.ok) throw new Error(data?.error || "Error en la petición");
-  return data;
-};
-
 const EdificiosRutas: React.FC = () => {
   const [destinos, setDestinos] = useState<Destino[]>([]);
   const [loading, setLoading]   = useState(true);
@@ -54,20 +43,19 @@ const EdificiosRutas: React.FC = () => {
   const [saving, setSaving]              = useState(false);
   const [pagina, setPagina]           = useState(1);
   const POR_PAGINA = 10;
-  const [confirmOpen, setConfirmOpen]   = useState(false);
-  const [confirmMsg, setConfirmMsg]     = useState("");
-  const [confirmFn, setConfirmFn]       = useState<() => void>(() => () => {});
-  const confirmar = (msg: string, fn: () => void) => { setConfirmMsg(msg); setConfirmFn(() => fn); setConfirmOpen(true); };
   const [uploadingImg, setUploadingImg] = useState(false);
+
+  // ✅ useConfirm en vez de 4 useState manuales
+  const confirm = useConfirm();
 
   const fetchDestinos = async () => {
     setLoading(true); setError("");
     try {
-      const data = await apiFetch("/locations");
-      const lista: Destino[] = Array.isArray(data) ? data : (Array.isArray(data.data) ? data.data : []);
-      setDestinos(lista);
+      // ✅ api (axios compartido) en vez de apiFetch local
+      const lista = await getLocations();
+      setDestinos(lista.map(l => ({ _id: l._id, nombre: l.nombre, posicion: l.posicion ?? { latitude: 0, longitude: 0 }, image: l.image })) as Destino[]);
     } catch (e: any) {
-      setError(e.message || "Error al cargar ubicaciones.");
+      setError(e.response?.data?.error || e.message || "Error al cargar ubicaciones.");
     } finally {
       setLoading(false);
     }
@@ -76,9 +64,10 @@ const EdificiosRutas: React.FC = () => {
   useEffect(() => { fetchDestinos(); }, []);
 
   const destinosFiltrados = useMemo(() => {
-    setPagina(1);
     return destinos.filter(d => !busqueda || d.nombre.toLowerCase().includes(busqueda.toLowerCase()));
   }, [destinos, busqueda]);
+
+  useEffect(() => { setPagina(1); }, [busqueda]);
 
   const destinosPagina = useMemo(() => destinosFiltrados.slice((pagina-1)*POR_PAGINA, pagina*POR_PAGINA), [destinosFiltrados, pagina]);
 
@@ -94,18 +83,14 @@ const EdificiosRutas: React.FC = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const validar = (): string | null => {
-    if (!formData.nombre.trim()) return "El nombre es obligatorio.";
-    return null;
+    const err = validateField(formData.nombre, FIELD_LIMITS.nombreEspacio);
+    return err ?? null;
   };
 
   const subirImagenEdificio = async (id: string, file: File) => {
     setUploadingImg(true);
     try {
-      const fd = new FormData();
-      fd.append("image", file);
-      await api.post(`/locations/${id}/image`, fd, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      await uploadLocationImage(id, file);
       fetchDestinos();
     } catch {
       setModalError("Error al subir la imagen.");
@@ -117,7 +102,7 @@ const EdificiosRutas: React.FC = () => {
   const eliminarImagenEdificio = async (id: string) => {
     setUploadingImg(true);
     try {
-      await api.delete(`/locations/${id}/image`);
+      await deleteLocationImage(id);
       fetchDestinos();
     } catch {
       setModalError("Error al eliminar la imagen.");
@@ -131,54 +116,29 @@ const EdificiosRutas: React.FC = () => {
     if (err) { setModalError(err); return; }
     if (!actual) { setModalError("No hay edificio seleccionado para editar."); return; }
     setSaving(true); setModalError("");
-    const body = JSON.stringify({ nombre: formData.nombre.trim() });
     try {
-      await apiFetch(`/locations/${actual._id}`, { method: "PUT", body });
+      // ✅ api en vez de apiFetch
+      await updateLocation(actual._id, { nombre: formData.nombre.trim() });
       cerrarModal(); fetchDestinos();
       notifyLocal("Edificio actualizado", `"${formData.nombre.trim()}" fue actualizado correctamente.`);
     } catch (e: any) {
-      setModalError(e.message || "Error al guardar.");
+      setModalError(e.response?.data?.error || e.message || "Error al guardar.");
     } finally {
       setSaving(false);
     }
   };
 
-  const eliminar = async (d: Destino) => {
-    confirmar(`¿Eliminar "${d.nombre}"? Esta acción no se puede deshacer.`, async () => {
-      try {
-        await apiFetch(`/locations/${d._id}`, { method: "DELETE" });
-        fetchDestinos();
-        notifyLocal("Edificio eliminado", `"${d.nombre}" fue eliminado.`);
-      } catch {
-        setModalError("Error al eliminar la ubicación.");
-      }
-    });
-  };
-
   return (
     <div className="spadmin-container">
-      <NavSpAdmin />
+      <NavSidebar rol="superadmin" />
 
       <div className="spadmin-main-content">
         {/* ── Header ── */}
-        <header className="spadmin-topbar" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div>
-            <h1>Gestión de Ubicaciones</h1>
-            <p>{destinos.length} edificio(s) registrado(s)</p>
-          </div>
-          <button
-            onClick={() => exportEdificiosPDF(destinos)}
-            title="Descargar PDF"
-            style={{
-              display: "flex", alignItems: "center", gap: 6,
-              padding: "9px 14px", borderRadius: "var(--radius-sm)",
-              background: "#e53e3e", color: "#fff", border: "none",
-              cursor: "pointer", fontSize: "0.85rem", fontWeight: 600,
-            }}
-          >
-            <FileDown size={15} /> Descargar PDF
-          </button>
-        </header>
+        <PageTopbar
+          title="Gestión de Ubicaciones"
+          subtitle={`${destinos.length} edificio(s) registrado(s)`}
+          onDownloadPDF={() => exportEdificiosPDF(destinos)}
+        />
 
         <div className="spadmin-content-area">
 
@@ -204,7 +164,6 @@ const EdificiosRutas: React.FC = () => {
             <span className="edr-count">
               {destinosFiltrados.length} de {destinos.length} ubicaciones
             </span>
-
           </div>
 
           {/* ── Error ── */}
@@ -216,8 +175,8 @@ const EdificiosRutas: React.FC = () => {
               Cargando ubicaciones...
             </p>
           ) : (
-            <div className="edr-table-wrapper">
-              <table className="edr-table">
+            <div className="ut-table-wrapper">
+              <table className="ut-table">
                 <thead>
                   <tr>
                     <th style={{ width: 64 }}>Imagen</th>
@@ -270,12 +229,9 @@ const EdificiosRutas: React.FC = () => {
                           <span className="edr-coord">{d.posicion.longitude.toFixed(5)}</span>
                         </td>
                         <td>
-                          <div className="acciones">
-                            <button className="btn-icon" onClick={() => abrirEditar(d)} title="Editar">
+                          <div className="ut-actions">
+                            <button data-action className="ut-btn-icon" onClick={() => abrirEditar(d)} title="Editar">
                               <Pencil size={15} />
-                            </button>
-                            <button className="btn-icon delete" onClick={() => eliminar(d)} title="Eliminar">
-                              <Trash2 size={15} />
                             </button>
                           </div>
                         </td>
@@ -290,80 +246,72 @@ const EdificiosRutas: React.FC = () => {
         </div>
       </div>
 
-      {/* ══ Modal ══ */}
-      {showModal && (
-        <div className="modal-overlay">
-          <div className="modal-container">
-            <div className="modal-header">
-              <h3>Editar Ubicación</h3>
-              <button onClick={cerrarModal}><X size={18} /></button>
-            </div>
-            <div className="modal-body">
+      {/* ✅ AppModal reemplaza el modal-overlay inline */}
+      <AppModal
+        open={showModal}
+        titulo="Editar Ubicación"
+        onClose={cerrarModal}
+        onSave={guardar}
+        saving={saving}
+        saveText="Actualizar"
+      >
+        <FormField label="Nombre *" limits={FIELD_LIMITS.nombreEspacio} value={formData.nombre} error={modalError || undefined}>
+          <input name="nombre" placeholder="Ej. Biblioteca UTEQ" value={formData.nombre}
+            maxLength={FIELD_LIMITS.nombreEspacio.max} onChange={handleChange} />
+        </FormField>
 
-              <div>
-                <label className="modal-label">Nombre *</label>
-                <input name="nombre" placeholder="Ej. Biblioteca UTEQ" value={formData.nombre} onChange={handleChange} />
-              </div>
-
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                <div>
-                  <label className="modal-label">Latitud</label>
-                  <input
-                    value={formData.latitude}
-                    readOnly
-                    disabled
-                    style={{ background: "var(--gray-100, #f3f4f6)", color: "var(--gray-400)", cursor: "not-allowed" }}
-                  />
-                </div>
-                <div>
-                  <label className="modal-label">Longitud</label>
-                  <input
-                    value={formData.longitude}
-                    readOnly
-                    disabled
-                    style={{ background: "var(--gray-100, #f3f4f6)", color: "var(--gray-400)", cursor: "not-allowed" }}
-                  />
-                </div>
-              </div>
-
-              {actual && (
-                <>
-                  <p className="modal-hint">
-                    📍 Las coordenadas no se pueden modificar desde el dashboard.
-                  </p>
-                  <div>
-                    <label className="modal-label">Imagen del edificio</label>
-                    <div style={{ marginTop: 6 }}>
-                      <ImageUploader
-                        currentImage={actual.image}
-                        placeholder={<MapPin size={28} color="var(--blue-400,#60a5fa)" />}
-                        onUpload={file => subirImagenEdificio(actual._id, file)}
-                        onDelete={() => eliminarImagenEdificio(actual._id)}
-                        uploading={uploadingImg}
-                        shape="rect"
-                        size={120}
-                      />
-                    </div>
-                  </div>
-                </>
-              )}
-
-              {modalError && <p className="modal-error">{modalError}</p>}
-            </div>
-            <div className="modal-footer">
-              <button className="btn-cancelar" onClick={cerrarModal}>Cancelar</button>
-              <button className="btn-guardar" onClick={guardar} disabled={saving}>
-                {saving ? "Guardando..." : "Actualizar"}
-              </button>
-            </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <div>
+            <label className="modal-label">Latitud</label>
+            <input
+              value={formData.latitude}
+              readOnly
+              disabled
+              style={{ background: "var(--gray-100, #f3f4f6)", color: "var(--gray-400)", cursor: "not-allowed" }}
+            />
+          </div>
+          <div>
+            <label className="modal-label">Longitud</label>
+            <input
+              value={formData.longitude}
+              readOnly
+              disabled
+              style={{ background: "var(--gray-100, #f3f4f6)", color: "var(--gray-400)", cursor: "not-allowed" }}
+            />
           </div>
         </div>
-      )}
+
+        {actual && (
+          <>
+            <p className="modal-hint">
+              📍 Las coordenadas no se pueden modificar desde el dashboard.
+            </p>
+            <div>
+              <label className="modal-label">Imagen del edificio</label>
+              <div style={{ marginTop: 6 }}>
+                <ImageUploader
+                  currentImage={actual.image}
+                  placeholder={<MapPin size={28} color="var(--blue-400,#60a5fa)" />}
+                  onUpload={file => subirImagenEdificio(actual._id, file)}
+                  onDelete={() => eliminarImagenEdificio(actual._id)}
+                  uploading={uploadingImg}
+                  shape="rect"
+                  size={120}
+                />
+              </div>
+            </div>
+          </>
+        )}
+
+        {modalError && <p className="modal-error">{modalError}</p>}
+      </AppModal>
+
+      {/* ✅ useConfirm disponible para futura lógica de eliminación */}
       <ConfirmModal
-        open={confirmOpen}
-        mensaje={confirmMsg}
-        onConfirm={() => { setConfirmOpen(false); confirmFn(); }}
-        onCancel={() => setConfirmOpen(false)}
+        open={confirm.open}
+        mensaje={confirm.mensaje}
+        onConfirm={confirm.ejecutar}
+        onCancel={confirm.cancelar}
       />
     </div>
   );

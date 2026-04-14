@@ -7,7 +7,7 @@
 
 .logs-container {
   display: flex; height: 100vh;
-  font-family: var(--font-sans); background: var(--gray-100); overflow: hidden;
+  font-family: var(--font-sans); background: var(--bg-main); overflow: hidden;
 }
 
 .logs-main {
@@ -27,7 +27,7 @@
 
 /* ── Contenido ── */
 .logs-content {
-  flex: 1; overflow-y: auto; padding: 28px 32px; background: var(--gray-100);
+  flex: 1; overflow-y: auto; padding: 28px 32px; background: var(--bg-main);
 }
 .logs-content::-webkit-scrollbar { width: 6px; }
 .logs-content::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 6px; }
@@ -37,12 +37,12 @@
 
 .logs-table {
   width: 100%; border-collapse: collapse;
-  background: var(--white); border-radius: var(--radius-lg);
+  background: var(--bg-card); border-radius: var(--radius-lg);
   overflow: hidden; box-shadow: var(--shadow-sm);
   border: 1px solid var(--border);
 }
 .logs-table thead {
-  background: var(--blue-50); border-bottom: 2px solid var(--blue-200);
+  background: var(--bg-table-head); border-bottom: 2px solid var(--blue-200);
 }
 .logs-table th {
   padding: 12px 18px; text-align: left;
@@ -51,16 +51,16 @@
 }
 .logs-table td {
   padding: 14px 18px; font-size: 0.88rem;
-  color: var(--gray-700); border-bottom: 1px solid var(--gray-100);
+  color: var(--text-primary); border-bottom: 1px solid var(--border);
   vertical-align: middle;
 }
 .logs-table tbody tr { transition: background var(--transition); }
-.logs-table tbody tr:hover { background: var(--blue-50); }
+.logs-table tbody tr:hover { background: var(--bg-hover); }
 .logs-table tbody tr:last-child td { border-bottom: none; }
 
 .logs-descripcion {
   display: flex; align-items: center; gap: 10px;
-  color: var(--gray-700); font-weight: 500;
+  color: var(--text-primary); font-weight: 500;
 }
 .logs-descripcion svg { color: var(--blue-500); flex-shrink: 0; }
 
@@ -80,12 +80,12 @@
 /* ── Modal ── */
 .logs-modal-overlay {
   position: fixed; inset: 0;
-  background: rgba(15,23,42,.5); backdrop-filter: blur(4px);
+  background: var(--bg-overlay); backdrop-filter: blur(4px);
   display: flex; justify-content: center; align-items: center;
   z-index: 1000;
 }
 .logs-modal-container {
-  background: var(--white); width: 460px; max-width: 95vw;
+  background: var(--bg-modal); width: 460px; max-width: 95vw;
   border-radius: var(--radius-lg); box-shadow: var(--shadow-xl);
   overflow: hidden; animation: modalUp .2s ease;
 }
@@ -112,11 +112,11 @@
   padding: 20px 24px;
   display: flex; flex-direction: column; gap: 10px;
 }
-.logs-modal-body p { font-size: 0.9rem; color: var(--gray-700); margin: 0; }
-.logs-modal-body strong { color: var(--gray-900); }
+.logs-modal-body p { font-size: 0.9rem; color: var(--text-primary); margin: 0; }
+.logs-modal-body strong { color: var(--text-primary); }
 
 .logs-modal-box {
-  background: var(--blue-50); border: 1px solid var(--blue-100);
+  background: var(--primary-light); border: 1px solid var(--blue-100);
   padding: 12px 14px; border-radius: var(--radius-sm);
   font-size: 0.88rem; color: var(--gray-700); line-height: 1.5;
 }
@@ -124,7 +124,7 @@
 .logs-modal-footer {
   padding: 14px 24px 18px;
   display: flex; justify-content: flex-end;
-  background: var(--gray-50); border-top: 1px solid var(--border);
+  background: var(--bg-main); border-top: 1px solid var(--border);
 }
 .logs-btn-cerrar {
   background: var(--blue-600); color: var(--white); border: none;

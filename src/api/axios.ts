@@ -17,7 +17,7 @@ api.interceptors.response.use(
   (err) => {
     if (err.response?.status === 401) {
       localStorage.clear();
-      window.location.href = '/';
+      window.location.href = '/login';
     }
     // Sin respuesta del servidor = error de red o servidor caído
     if (!err.response) {

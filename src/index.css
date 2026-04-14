@@ -45,6 +45,12 @@
   --yellow-50:       #fffbeb;
   --yellow-600:      #d97706;
 
+  /* ✅ Variables que faltaban */
+  --white:           #ffffff;
+  --blue-400:        #60a5fa;
+  --blue-700:        #1d4ed8;
+  --blue-800:        #1e40af;
+
   --gray-50:         #f9fafb;
   --gray-100:        #f3f4f6;
   --gray-200:        #e5e7eb;
@@ -108,6 +114,12 @@
   --yellow-50:       #2d2510;
   --yellow-600:      #fbbf24;
 
+  /* ✅ Variables que faltaban — versión dark */
+  --white:           #21262d;
+  --blue-400:        #79c0ff;
+  --blue-700:        #58a6ff;
+  --blue-800:        #388bfd;
+
   --gray-50:         #1c2333;
   --gray-100:        #21262d;
   --gray-200:        #30363d;
@@ -168,7 +180,6 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-/* Inputs y selects — soporte dark mode global */
 input, select, textarea {
   background-color: var(--bg-input);
   color: var(--text-primary);
@@ -178,4 +189,36 @@ input, select, textarea {
 
 button {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.25s;
+}
+
+body.offline [data-action] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+  filter: grayscale(0.4);
+  position: relative;
+}
+
+body.offline [data-action]::after {
+  content: "No disponible sin conexión";
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1e293b;
+  color: #f1f5f9;
+  font-size: 0.72rem;
+  font-weight: 500;
+  white-space: nowrap;
+  padding: 4px 8px;
+  border-radius: 6px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 9998;
+}
+
+body.offline [data-action]:hover::after {
+  opacity: 1;
+  pointer-events: none;
 }
