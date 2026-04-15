@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import "../styles/GestionPersonal.css";
 import "../styles/tabla.css";
-import NavSidebar from "./components/NavSidebar";
-import PageTopbar from "./components/PageTopbar";
+import NavSidebar from "./components/NavSidebar.tsx";
+import PageTopbar from "./components/PageTopbar.tsx";
 import {
   Plus, Pencil, Trash2, X, Search,
   Mail, Phone, Building2, MapPin, User,
@@ -15,23 +15,23 @@ import {
   uploadPersonalProfileImage, deletePersonalProfileImage,
   uploadPersonalScheduleImage, deletePersonalScheduleImage,
   type Personal, type CreatePersonalData,
-} from "../api/personal";
+} from "../api/personal.ts";
 import {
   getUserById, updateUsuario, deleteUsuario, registerAdmin,
-} from "../api/users";
-import { getLocations } from "../api/locations";
-import Paginacion from "./components/Paginacion";
-import ImageUploader from "./components/ImageUploader";
+} from "../api/users.ts";
+import { getLocations } from "../api/locations.ts";
+import Paginacion from "./components/Paginacion.tsx";
+import ImageUploader from "./components/ImageUploader.tsx";
 import { exportPersonalPDF } from "../utils/pdfExport";
 import { notifyLocal } from "../utils/notify.ts";
-import FieldError from "./components/ui/FieldError";
-import CharCount from "./components/ui/CharCount";
-import FormField from "./components/ui/FormField";
+import FieldError from "./components/ui/FieldError.tsx";
+import CharCount from "./components/ui/CharCount.tsx";
+import FormField from "./components/ui/FormField.tsx";
 import { FIELD_LIMITS, validateField } from "../utils/fieldLimits";
-import AppModal from "./components/shared/AppModal";
-import TableWrapper from "./components/shared/TableWrapper";
-import { useConfirm } from "../hooks/useConfirm";
-import ConfirmModal from "./components/ConfirmModal";
+import AppModal from "./components/shared/AppModal.tsx";
+import TableWrapper from "./components/shared/TableWrapper.tsx";
+import { useConfirm } from "../hooks/useConfirm.ts";
+import ConfirmModal from "./components/ConfirmModal.tsx";
 
 interface Props { rol: "admin" | "superadmin"; }
 

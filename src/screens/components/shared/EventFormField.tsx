@@ -24,8 +24,8 @@
  * ─────────────────────────────────────────────────────────────
  */
 import React from "react";
-import CharCount from "../../components/ui/CharCount";
-import FieldError from "../../components/ui/FieldError";
+import CharCount from "../ui/CharCount";
+import FieldError from "../ui/FieldError";
 
 interface EventFormFieldProps {
   label: string;

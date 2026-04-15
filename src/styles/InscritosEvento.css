@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 @import './variables.css';
+@import './tabla.css';
+
 
 /* =====================================================
    INSCRITOS & ASISTENCIA DE EVENTOS
@@ -9,7 +11,7 @@
   display: flex;
   height: 100vh;
   font-family: var(--font-sans);
-  background: var(--gray-100);
+  background: var(--bg-main);
   overflow: hidden;
 }
 
@@ -54,7 +56,7 @@
   flex: 1;
   overflow-y: auto;
   padding: 28px 32px;
-  background: var(--gray-100);
+  background: var(--bg-main);
 }
 .ins-content::-webkit-scrollbar { width: 6px; }
 .ins-content::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 6px; }
@@ -87,8 +89,8 @@
   border-radius: var(--radius-sm);
   font-size: 0.88rem;
   font-family: var(--font-sans);
-  color: var(--gray-800);
-  background: var(--white);
+  color: var(--text-primary);
+  background: var(--bg-input);
   cursor: pointer;
   transition: border-color var(--transition);
 }
@@ -117,8 +119,8 @@
   border-radius: var(--radius-sm);
   font-size: 0.88rem;
   font-family: var(--font-sans);
-  color: var(--gray-800);
-  background: var(--white);
+  color: var(--text-primary);
+  background: var(--bg-input);
   transition: border-color var(--transition);
   box-sizing: border-box;
 }
@@ -132,7 +134,7 @@
   display: flex;
   gap: 4px;
   margin-bottom: 20px;
-  background: var(--white);
+  background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   padding: 4px;
@@ -173,7 +175,7 @@
 
 /* ── Info del evento seleccionado ── */
 .ins-evento-card {
-  background: var(--white);
+  background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   padding: 16px 20px;
@@ -247,13 +249,13 @@
   letter-spacing: 0;
 }
 .ins-stat-total   { background: var(--blue-50);    color: var(--blue-700);   border: 1px solid var(--blue-200); }
-.ins-stat-acept   { background: var(--green-100);   color: var(--green-600);  border: 1px solid #86efac; }
-.ins-stat-pend    { background: #fef9c3; color: #a16207; border: 1px solid #fde047; }
-.ins-stat-asist   { background: #f0fdf4; color: #15803d; border: 1px solid #4ade80; }
+.ins-stat-acept   { background: var(--green-100);   color: var(--green-600);  border: 1px solid var(--green-100); }
+.ins-stat-pend    { background: var(--yellow-50); color: var(--yellow-600); border: 1px solid var(--yellow-100); }
+.ins-stat-asist   { background: var(--green-50); color: var(--green-600); border: 1px solid var(--green-100); }
 
 /* ── Tabla de inscritos ── */
 .ins-tabla {
-  background: var(--white);
+  background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
@@ -263,7 +265,7 @@
 .ins-tabla-head {
   display: grid;
   grid-template-columns: 2.2fr 1.8fr 1.3fr 1.3fr 1.4fr;
-  background: var(--blue-50);
+  background: var(--bg-table-head);
   border-bottom: 2px solid var(--blue-200);
 }
 .ins-tabla-head.sin-acciones {
@@ -319,8 +321,8 @@
   font-weight: 600;
   border: 1px solid transparent;
 }
-.ins-badge.aceptada  { background: var(--green-100);  color: var(--green-600);  border-color: #86efac; }
-.ins-badge.rechazada { background: var(--red-100);    color: var(--red-600);    border-color: #fca5a5; }
+.ins-badge.aceptada  { background: var(--green-100);  color: var(--green-600);  border-color: var(--green-100); }
+.ins-badge.rechazada { background: var(--red-100);    color: var(--red-600);    border-color: var(--red-100); }
 .ins-badge.enviada   { background: var(--blue-100);   color: var(--blue-600);   border-color: var(--blue-200); }
 .ins-badge.pendiente { background: #fef9c3;           color: #a16207;           border-color: #fde047; }
 .ins-badge.asistio   { background: #dcfce7;           color: #15803d;           border-color: #4ade80; }
@@ -360,7 +362,7 @@
 .ins-btn-rechazar:hover:not(:disabled) { background: #fca5a5; }
 .ins-btn-asistio  { background: #dcfce7;          color: #15803d;          border-color: #4ade80; }
 .ins-btn-asistio:hover:not(:disabled)  { background: #bbf7d0; }
-.ins-btn-falta    { background: #fff1f2;          color: #e11d48;          border-color: #fda4af; }
+.ins-btn-falta    { background: var(--bg-card)1f2;          color: #e11d48;          border-color: #fda4af; }
 .ins-btn-falta:hover:not(:disabled)    { background: #fecdd3; }
 
 /* ── Estado vacío ── */
@@ -459,7 +461,7 @@
   font-family: var(--font-sans);
   cursor: pointer;
   border: 1.5px solid var(--border);
-  background: var(--white);
+  background: var(--bg-input);
   color: var(--gray-600);
   transition: all var(--transition);
 }
@@ -492,7 +494,7 @@
 /* ── Tabs de eventos ── */
 .ins-tabs-eventos {
   display: flex;
-  background: var(--white);
+  background: var(--bg-card);
   border-radius: var(--radius);
   border: 1px solid var(--border);
   margin-bottom: 20px;
@@ -514,7 +516,7 @@
   transition: all var(--transition);
   position: relative;
 }
-.ins-tab-evento:hover { background: var(--gray-50); }
+.ins-tab-evento:hover { background: var(--bg-main); }
 .ins-tab-evento.active {
   background: var(--blue-600);
   color: var(--white);
@@ -536,7 +538,7 @@
 
 /* ── Selección de evento ── */
 .ins-seleccion-evento {
-  background: var(--white);
+  background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 24px;
@@ -562,7 +564,7 @@
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all var(--transition);
-  background: var(--white);
+  background: var(--bg-card);
 }
 .ins-evento-item:hover {
   border-color: var(--blue-300);

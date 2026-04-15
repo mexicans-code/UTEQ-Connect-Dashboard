@@ -7,7 +7,7 @@
 
 .reportes-container {
   display: flex; height: 100vh;
-  font-family: var(--font-sans); background: var(--gray-100); overflow: hidden;
+  font-family: var(--font-sans); background: var(--bg-main); overflow: hidden;
 }
 .reportes-main {
   flex: 1; display: flex; flex-direction: column;
@@ -26,7 +26,7 @@
 
 /* ── Contenido ── */
 .reportes-content {
-  flex: 1; overflow-y: auto; padding: 28px 32px; background: var(--gray-100);
+  flex: 1; overflow-y: auto; padding: 28px 32px; background: var(--bg-main);
 }
 .reportes-content::-webkit-scrollbar { width: 6px; }
 .reportes-content::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 6px; }
@@ -40,7 +40,7 @@
 }
 
 .reportes-card {
-  background: var(--white);
+  background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 22px 20px;
@@ -64,7 +64,7 @@
 }
 .reportes-card h3 {
   font-size: 2rem; font-weight: 800;
-  color: var(--blue-800); margin: 0 0 4px;
+  color: var(--primary); margin: 0 0 4px;
 }
 .reportes-card p {
   font-size: 0.8rem; color: var(--gray-500); margin: 0; font-weight: 500;
@@ -78,7 +78,7 @@
 }
 
 .grafica-box {
-  background: var(--white);
+  background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 24px;
@@ -86,7 +86,7 @@
 }
 .grafica-box h3 {
   font-size: 0.95rem; font-weight: 700;
-  color: var(--blue-800); margin: 0 0 20px;
+  color: var(--text-primary); margin: 0 0 20px;
   padding-bottom: 12px; border-bottom: 1px solid var(--border);
 }
 

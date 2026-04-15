@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "../styles/HomeScreen.css";
 import fondo from "../assets/FondoInicio.png";
 import logo from "../assets/Logo.png";
-import ThemeToggle from "../components/ThemeToggle";
+import ThemeToggle from "./components/dark/ThemeToggle";
 
 const HomeScreen: React.FC = () => {
   const navigate = useNavigate();

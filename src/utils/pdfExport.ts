@@ -551,10 +551,10 @@ export function exportLogsPDF(logs: any[]) {
 
   const rows = logs.map((l, i) => [
     i + 1,
-    l.titulo      || "—",
-    l.descripcion || "—",
-    l.usuario     || "—",
-    l.fecha       || "—",
+    l.evento      || "—",
+    l.detalle     || "—",
+    l.userId      || "—",
+    l.fecha ? new Date(l.fecha).toLocaleString("es-MX", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "—",
   ]);
 
   autoTable(doc, {

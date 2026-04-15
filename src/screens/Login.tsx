@@ -3,8 +3,9 @@ import { useNavigate } from "react-router-dom";
 import "../styles/login.css";
 import "../styles/HomeScreen.css";
 import fondo from "../assets/FondoLogin.png";
-import { API_URL } from "../api/config";
-import ThemeToggle from "../components/ThemeToggle";
+import api from "../api/axios";
+import ThemeToggle from "./components/dark/ThemeToggle";
+import { suscribirPush } from "../utils/notify";
 
 const LoginScreen: React.FC = () => {
   const navigate = useNavigate();
@@ -20,20 +21,29 @@ const LoginScreen: React.FC = () => {
       return;
     }
 
+    // ── Sin conexión: intentar con sesión guardada ──
+    if (!navigator.onLine) {
+      const token = localStorage.getItem("token");
+      const rol   = localStorage.getItem("rol");
+      if (token && rol) {
+        if (rol === "superadmin") navigate("/admin-sp");
+        else navigate("/admin");
+      } else {
+        setError("Sin conexión a internet. Inicia sesión en línea al menos una vez para poder acceder sin conexión.");
+      }
+      return;
+    }
+
     setLoading(true);
     setError("");
 
     try {
-      const response = await fetch(`${API_URL}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: email.trim().toLowerCase(),
-          password,
-        }),
+      const res = await api.post("/auth/login", {
+        email: email.trim().toLowerCase(),
+        password,
       });
 
-      const data = await response.json();
+      const data = res.data;
 
       if (data.success) {
         const { user, token } = data.data;
@@ -45,6 +55,13 @@ const LoginScreen: React.FC = () => {
         localStorage.setItem("email", user.email);
         localStorage.setItem("rol", user.rol);
         localStorage.setItem("imagenPerfil", user.imagenPerfil || "");
+
+        // Pedir permiso de notificaciones y suscribir push tras login exitoso
+        if ('Notification' in window && Notification.permission !== 'denied') {
+          Notification.requestPermission().then(permiso => {
+            if (permiso === 'granted') suscribirPush();
+          });
+        }
 
         // Si debe cambiar contraseña, redirigir primero
         if (user.requiereCambioPassword) {
@@ -64,9 +81,8 @@ const LoginScreen: React.FC = () => {
       } else {
         setError(data.error || "Credenciales incorrectas.");
       }
-    } catch (err) {
-      setError("No se pudo conectar al servidor. Intenta de nuevo.");
-      console.error(err);
+    } catch (err: any) {
+      setError(err.response?.data?.error || err.message || "No se pudo conectar al servidor. Intenta de nuevo.");
     } finally {
       setLoading(false);
     }
@@ -83,9 +99,6 @@ const LoginScreen: React.FC = () => {
       className="home-container"
       style={{ backgroundImage: `url(${fondo})` }}
     >
-      <div className="home-theme-toggle">
-        <ThemeToggle showLabel={true} />
-      </div>
       <div className="home-theme-toggle">
         <ThemeToggle showLabel={true} />
       </div>
