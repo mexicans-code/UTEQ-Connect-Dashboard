@@ -1,0 +1,68 @@
+.offline-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  padding: 9px 16px;
+  font-family: "Poppins", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+
+  background-color: #1e293b;
+  color: #f1f5f9;
+
+  /* Entrada desde arriba */
+  animation: banner-slide-in 0.3s ease forwards;
+}
+
+/* Variante "de vuelta online" */
+.offline-banner--back {
+  background-color: #15803d;
+  color: #f0fdf4;
+  animation: banner-slide-in 0.3s ease forwards;
+}
+
+.offline-banner__icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* Punto parpadeante para indicar estado sin conexión */
+.offline-banner::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #f87171;
+  flex-shrink: 0;
+  animation: pulse-dot 1.8s ease-in-out infinite;
+}
+
+.offline-banner--back::before {
+  display: none;
+}
+
+@keyframes banner-slide-in {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.8); }
+}

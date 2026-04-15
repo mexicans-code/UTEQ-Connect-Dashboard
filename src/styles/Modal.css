@@ -1,0 +1,251 @@
+/**
+ * modal.css
+ * ─────────────────────────────────────────────────────────────
+ * Estilos compartidos para TODOS los modales del sistema.
+ *
+ * Reemplaza el bloque .modal-overlay … .btn-guardar que estaba
+ * copiado literalmente en:
+ *   Usuarios.css, GestionPersonal.css, Eventos.css,
+ *   EdificiosRutas.css, InicioSpAdmin.css, InicioAdmin.css,
+ *   GestionRutas.css, y más.
+ *
+ * Importar una sola vez donde se necesite:
+ *   import "../../styles/modal.css";
+ *
+ * O mejor aún: importar en src/index.css para que esté global.
+ * ─────────────────────────────────────────────────────────────
+ */
+@import './variables.css';
+
+/* ── Overlay ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: overlayIn 0.15s ease;
+}
+
+@keyframes overlayIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Contenedor ── */
+.modal-container {
+  background: var(--bg-modal);
+  width: 440px;
+  max-width: 95vw;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+  animation: modalUp 0.2s ease;
+}
+
+/* Tamaño ancho — para modales más complejos (Eventos paso 2) */
+.modal-container.modal-lg { width: 560px; }
+
+@keyframes modalUp {
+  from { opacity: 0; transform: translateY(16px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+
+/* ── Header ── */
+.modal-header {
+  background: linear-gradient(135deg, var(--blue-700), var(--blue-800));
+  padding: 18px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h2,
+.modal-header h3 {
+  color: var(--white);
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.modal-header p {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.78rem;
+  margin: 3px 0 0;
+}
+
+.modal-header .modal-close {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: white;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition);
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin-left: 12px;
+  z-index: 10;
+}
+
+.modal-header .modal-close:hover { background: rgba(255, 255, 255, 0.28); }
+
+/* Extra info dentro del header (ej. indicador de pasos) */
+.modal-header-extra {
+  margin-top: 8px;
+}
+
+/* ── Body ── */
+.modal-body {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.modal-body::-webkit-scrollbar { width: 5px; }
+.modal-body::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 6px; }
+
+.modal-body input,
+.modal-body select,
+.modal-body textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+  background: var(--bg-input);
+  transition: border-color var(--transition), box-shadow var(--transition);
+  box-sizing: border-box;
+  outline: none;
+}
+
+.modal-body input:focus,
+.modal-body select:focus,
+.modal-body textarea:focus {
+  border-color: var(--blue-400);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.modal-body input::placeholder,
+.modal-body textarea::placeholder { color: var(--gray-300); }
+
+/* ── Hint dentro del body ── */
+.modal-hint {
+  font-size: 0.76rem;
+  color: var(--gray-400);
+  background: var(--bg-main);
+  border: 1px solid var(--gray-200);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  line-height: 1.5;
+}
+
+/* ── Caja de error dentro del body ── */
+.modal-error-box {
+  background: var(--red-50);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+}
+
+.modal-error-box p {
+  color: var(--red-600);
+  font-size: 0.84rem;
+  margin: 0;
+}
+
+/* ── Footer ── */
+.modal-footer {
+  padding: 14px 24px 18px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  background: var(--bg-main);
+  border-top: 1px solid var(--border);
+}
+
+/* ── Botones ── */
+.btn-cancelar {
+  background: var(--gray-100);
+  color: var(--text-primary);
+  border: 1.5px solid var(--border);
+  padding: 9px 18px;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: all var(--transition);
+}
+.btn-cancelar:hover { background: var(--gray-200); }
+
+.btn-guardar {
+  background: var(--blue-600);
+  color: var(--white);
+  border: none;
+  padding: 9px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: all var(--transition);
+}
+.btn-guardar:hover    { background: var(--blue-700); }
+.btn-guardar:disabled { opacity: 0.55; cursor: not-allowed; }
+
+
+/* ── Tabs de pasos (ej. Gestión de Personal) ── */
+.modal-tabs-wrapper {
+  background: var(--bg-main);
+  border-bottom: 1px solid var(--border);
+}
+.modal-tabs {
+  display: flex;
+  border-bottom: 2px solid var(--border);
+  background: var(--bg-main);
+  flex-shrink: 0;
+  overflow-x: auto;
+  margin-bottom: -1px;
+}
+.modal-tab {
+  padding: 10px 18px;
+  border: none;
+  background: transparent;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  font-family: var(--font-sans);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+}
+.modal-tab:hover  { color: var(--primary); }
+.modal-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+/* Ocultar spinner en inputs tipo number dentro del modal */
+.modal-body input[type=number]::-webkit-inner-spin-button,
+.modal-body input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.modal-body input[type=number] { -moz-appearance: textfield; }
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .modal-container,
+  .modal-container.modal-lg { width: 96vw; }
+  .modal-body { padding: 16px; }
+  .modal-footer { padding: 12px 16px 16px; }
+}
