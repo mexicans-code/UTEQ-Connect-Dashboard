@@ -1,0 +1,301 @@
+/* ============================================================
+   TABLA.CSS — Sistema unificado de tablas UTEQ Connect
+   Importar en cada screen que use tabla:
+     @import '../styles/tabla.css';
+   ============================================================ */
+
+/* ── Wrapper contenedor ── */
+.ut-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-card);
+}
+
+/* ── Tabla base ── */
+.ut-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+}
+
+/* ── Encabezado ── */
+.ut-table thead {
+  background: var(--bg-table-head);
+  border-bottom: 2px solid var(--blue-200);
+}
+
+.ut-table thead th {
+  padding: 13px 16px;
+  text-align: left;
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--blue-700);
+  white-space: nowrap;
+  user-select: none;
+}
+
+/* ── Cuerpo ── */
+.ut-table tbody tr {
+  background: var(--bg-table-row);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s ease;
+}
+
+.ut-table tbody tr:nth-child(even) {
+  background: var(--bg-table-alt);
+}
+
+.ut-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.ut-table tbody tr:hover {
+  background: var(--bg-hover);
+}
+
+/* Fila bloqueada / deshabilitada */
+.ut-table tbody tr.ut-row-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.ut-table tbody tr.ut-row-disabled:hover {
+  background: var(--bg-table-row);
+}
+
+/* ── Celdas ── */
+.ut-table td {
+  padding: 13px 16px;
+  color: var(--text-primary);
+  vertical-align: middle;
+  font-size: 0.875rem;
+}
+
+/* Celda de acciones — siempre centrada */
+.ut-table td.ut-col-actions {
+  text-align: right;
+  white-space: nowrap;
+}
+.ut-table th.ut-col-actions {
+  text-align: right;
+}
+
+/* Celda numérica — derecha */
+.ut-table td.ut-col-num,
+.ut-table th.ut-col-num {
+  text-align: right;
+}
+
+/* ── Estado vacío ── */
+.ut-empty {
+  text-align: center;
+  padding: 56px 24px;
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+}
+.ut-empty svg {
+  display: block;
+  margin: 0 auto 14px;
+  opacity: 0.3;
+  color: var(--gray-400);
+}
+.ut-empty h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin: 0 0 6px;
+}
+.ut-empty p {
+  font-size: 0.85rem;
+  margin: 0;
+  color: var(--text-muted);
+}
+
+/* ── Carga ── */
+.ut-loading {
+  text-align: center;
+  padding: 40px 24px;
+  color: var(--gray-400);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+}
+
+/* ── Badges de estado ── */
+.ut-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.ut-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+.ut-badge--activo {
+  background: var(--green-50);
+  color: var(--green-600);
+  border: 1px solid rgba(22, 163, 74, 0.25);
+}
+.ut-badge--inactivo {
+  background: var(--gray-100);
+  color: var(--gray-500);
+  border: 1px solid var(--border);
+}
+.ut-badge--info {
+  background: var(--primary-light);
+  color: var(--primary-text);
+  border: 1px solid rgba(37, 99, 235, 0.2);
+}
+.ut-badge--warn {
+  background: var(--yellow-50);
+  color: var(--yellow-600);
+  border: 1px solid rgba(217, 119, 6, 0.25);
+}
+.ut-badge--error {
+  background: var(--red-50);
+  color: var(--red-600);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+}
+.ut-badge--lleno {
+  background: var(--red-50);
+  color: var(--red-600);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+}
+
+/* ── Botones de acción dentro de tabla ── */
+.ut-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 0;
+  font-family: var(--font-sans);
+}
+.ut-btn-icon:hover {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateY(-1px);
+}
+.ut-btn-icon--danger:hover {
+  background: var(--red-50);
+  border-color: var(--red-600);
+  color: var(--red-600);
+}
+.ut-btn-icon--success:hover {
+  background: var(--green-50);
+  border-color: var(--green-600);
+  color: var(--green-600);
+}
+.ut-btn-icon--warn:hover {
+  background: var(--yellow-50);
+  border-color: var(--yellow-600);
+  color: var(--yellow-600);
+}
+
+.ut-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+/* ── Botón de texto dentro de tabla ── */
+.ut-btn-detail {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 7px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: var(--font-sans);
+}
+.ut-btn-detail:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+/* ── Porcentaje / número destacado ── */
+.ut-pct {
+  display: inline-block;
+  background: var(--primary-light);
+  color: var(--primary-text);
+  border: 1px solid var(--blue-200);
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+/* ============================================================
+   DARK MODE — todas las tablas
+   ============================================================ */
+[data-theme="dark"] .ut-table thead {
+  background: var(--bg-table-head);
+  border-bottom-color: var(--border);
+}
+[data-theme="dark"] .ut-table thead th {
+  color: var(--primary-text);
+}
+[data-theme="dark"] .ut-table tbody tr {
+  background: var(--bg-table-row);
+}
+[data-theme="dark"] .ut-table tbody tr:nth-child(even) {
+  background: var(--bg-table-alt);
+}
+[data-theme="dark"] .ut-table tbody tr:hover {
+  background: var(--bg-hover);
+}
+[data-theme="dark"] .ut-table tbody tr.ut-row-disabled,
+[data-theme="dark"] .ut-table tbody tr.ut-row-disabled:hover {
+  background: var(--bg-table-row);
+}
+[data-theme="dark"] .ut-pct {
+  border-color: var(--border);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 768px) {
+  .ut-table th,
+  .ut-table td {
+    padding: 10px 12px;
+    font-size: 0.82rem;
+  }
+}
+@media (max-width: 480px) {
+  .ut-table th,
+  .ut-table td {
+    padding: 8px 10px;
+    font-size: 0.78rem;
+  }
+}

@@ -480,3 +480,64 @@ button {
   font-size: 12px;
   opacity: 0.6;
 }
+/* =====================================================
+   DARK MODE — Fondo más oscuro en Home y Login
+   ===================================================== */
+
+/* Overlay principal más oscuro en dark mode */
+[data-theme="dark"] .overlay {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.92) 0%,
+    rgba(5, 15, 40, 0.88) 50%,
+    rgba(10, 25, 70, 0.82) 100%
+  );
+}
+
+/* Oscurecer imagen de fondo con pseudo-elemento en dark mode */
+[data-theme="dark"] .home-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Asegurar que el overlay quede sobre la capa oscura */
+[data-theme="dark"] .overlay {
+  position: relative;
+  z-index: 1;
+}
+
+[data-theme="dark"] .home-theme-toggle {
+  z-index: 9999;
+}
+
+/* Footer más oscuro en dark mode */
+[data-theme="dark"] .footer {
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.65) 0%,
+    rgba(0, 0, 0, 0.92) 100%
+  );
+  border-top-color: rgba(0, 200, 255, 0.15);
+}
+
+/* Botón volver más visible en dark mode */
+[data-theme="dark"] .back-button {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+[data-theme="dark"] .back-button:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Login card más oscura en dark mode */
+[data-theme="dark"] .login-card {
+  background: rgba(5, 10, 25, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+}

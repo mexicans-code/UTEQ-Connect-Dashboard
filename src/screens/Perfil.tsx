@@ -3,14 +3,14 @@ import "../styles/Perfil.css";
 import { useNavigate } from "react-router-dom";
 import {
   User, Mail, Shield, Calendar, Clock,
-  KeyRound, ArrowLeft, Check, AlertCircle, Save,
+  KeyRound, Check, AlertCircle, Save,
 } from "lucide-react";
-import api from "../api/axios";
+import { getProfile, updateUsuario, changePassword, uploadProfileImage, deleteProfileImage } from "../api/users";
 
 /* ── Importa el nav correcto según el rol ── */
-import NavAdmin from "./components/NavAdmin";
-import NavSpAdmin from "./components/NavSpAdmin";
-import ImageUploader from "../components/ImageUploader";
+import ImageUploader from "./components/ImageUploader";
+import NavSidebar from "./components/NavSidebar";
+import PageTopbar from "./components/PageTopbar";
 
 /* ════════════════════════════════════
    Interfaces
@@ -92,8 +92,7 @@ const Perfil: React.FC = () => {
   const fetchPerfil = async () => {
     setLoading(true);
     try {
-      const res = await api.get("/users/profile");
-      const data: UsuarioPerfil = res.data.data || res.data;
+      const data: UsuarioPerfil = await getProfile();
       setUsuario(data);
       setNombre(data.nombre);
       // Sincronizar imagenPerfil en localStorage para que los navs la muestren
@@ -127,7 +126,8 @@ const Perfil: React.FC = () => {
     }
     setSavingNombre(true);
     try {
-      await api.put(`/users/${usuario?._id}`, { nombre: nombre.trim() });
+      if (!usuario?._id) throw new Error("Sin ID de usuario");
+      await updateUsuario(usuario._id, { nombre: nombre.trim() });
       localStorage.setItem("nombre", nombre.trim());
       setUsuario(prev => prev ? { ...prev, nombre: nombre.trim() } : prev);
       showToast(setToastNombre, { tipo: "success", msg: "Nombre actualizado correctamente." });
@@ -143,18 +143,15 @@ const Perfil: React.FC = () => {
     if (!passActual || !passNueva || !passConfirm) {
       showToast(setToastPass, { tipo: "error", msg: "Completa todos los campos." }); return;
     }
-    if (passNueva.length < 6) {
-      showToast(setToastPass, { tipo: "error", msg: "La nueva contraseña debe tener mínimo 6 caracteres." }); return;
+    if (passNueva.length < 8) {
+      showToast(setToastPass, { tipo: "error", msg: "La nueva contraseña debe tener mínimo 8 caracteres." }); return;
     }
     if (passNueva !== passConfirm) {
       showToast(setToastPass, { tipo: "error", msg: "Las contraseñas nuevas no coinciden." }); return;
     }
     setSavingPass(true);
     try {
-      await api.put("/users/change-password", {
-        currentPassword: passActual,
-        newPassword:     passNueva,
-      });
+      await changePassword(passActual, passNueva);
       setPassActual(""); setPassNueva(""); setPassConfirm("");
       showToast(setToastPass, { tipo: "success", msg: "Contraseña actualizada. Usa la nueva en tu próximo inicio de sesión." });
     } catch (err: any) {
@@ -168,11 +165,7 @@ const Perfil: React.FC = () => {
   const subirImagen = async (file: File) => {
     setUploadingImg(true);
     try {
-      const fd = new FormData();
-      fd.append("image", file);
-      await api.put("/users/profile-image", fd, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      await uploadProfileImage(file);
       await fetchPerfil();
       showToast(setToastNombre, { tipo: "success", msg: "Foto de perfil actualizada." });
     } catch {
@@ -185,7 +178,7 @@ const Perfil: React.FC = () => {
   const eliminarImagen = async () => {
     setUploadingImg(true);
     try {
-      await api.delete("/users/profile-image");
+      await deleteProfileImage();
       await fetchPerfil();
       showToast(setToastNombre, { tipo: "success", msg: "Foto eliminada." });
     } catch {
@@ -195,24 +188,17 @@ const Perfil: React.FC = () => {
     }
   };
 
-  /* ── Ruta de regreso según rol ── */
-  const rutaAtras = esSuperAdmin ? "/admin-sp" : "/admin";
-  const Nav = esSuperAdmin ? NavSpAdmin : NavAdmin;
-
   /* ════════════════ RENDER ════════════════ */
   return (
     <div className="perfil-container">
-      <Nav />
-
+      <NavSidebar rol={rolActual as "admin" | "superadmin"} />
       <div className="perfil-main">
 
         {/* ── Header ── */}
-        <header className="perfil-header">
-          <button className="perfil-header-back" onClick={() => navigate(rutaAtras)} title="Volver">
-            <ArrowLeft size={16} />
-          </button>
-          <h1>Mi Perfil</h1>
-        </header>
+        <PageTopbar
+          title="Mi Perfil"
+          showDownload={false}
+        />
 
         <div className="perfil-content">
           {loading ? (
@@ -373,7 +359,7 @@ const Perfil: React.FC = () => {
                           type="password"
                           value={passNueva}
                           onChange={e => setPassNueva(e.target.value)}
-                          placeholder="Mínimo 6 caracteres"
+                          placeholder="Mínimo 8 caracteres"
                           autoComplete="new-password"
                         />
                       </div>
@@ -398,14 +384,14 @@ const Perfil: React.FC = () => {
                             flex: 1, height: 4, borderRadius: 4,
                             background: passNueva.length >= n * 2
                               ? (passNueva.length >= 10 ? "var(--green-500)"
-                                : passNueva.length >= 6 ? "var(--yellow-500)"
+                                : passNueva.length >= 8 ? "var(--yellow-500)"
                                 : "var(--red-500)")
                               : "var(--gray-200)",
                             transition: "background .3s",
                           }} />
                         ))}
                         <span style={{ fontSize: "0.72rem", color: "var(--gray-400)", whiteSpace: "nowrap" }}>
-                          {passNueva.length < 6 ? "Muy corta"
+                          {passNueva.length < 8 ? "Muy corta"
                             : passNueva.length < 10 ? "Aceptable"
                             : "Fuerte"}
                         </span>

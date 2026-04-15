@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ShieldCheck, Eye, EyeOff, Lock } from "lucide-react";
-import { API_URL } from "../api/config";
+import { changePassword } from "../api/users";
 
 const CambioPassword: React.FC = () => {
   const navigate = useNavigate();
@@ -25,8 +25,8 @@ const CambioPassword: React.FC = () => {
       setError("Todos los campos son obligatorios.");
       return;
     }
-    if (newPassword.length < 6) {
-      setError("La nueva contraseña debe tener al menos 6 caracteres.");
+    if (newPassword.length < 8) {
+      setError("La nueva contraseña debe tener al menos 8 caracteres.");
       return;
     }
     if (newPassword !== confirmPassword) {
@@ -40,30 +40,15 @@ const CambioPassword: React.FC = () => {
 
     setLoading(true);
     try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`${API_URL}/users/change-password`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({ currentPassword, newPassword }),
-      });
-
-      const data = await res.json();
-
-      if (data.success) {
-        // Redirigir al panel correspondiente
-        if (rol === "superadmin") {
-          navigate("/admin-sp");
-        } else {
-          navigate("/admin");
-        }
+      await changePassword(currentPassword, newPassword);
+      // Cambio exitoso — redirigir
+      if (rol === "superadmin") {
+        navigate("/admin-sp");
       } else {
-        setError(data.error || "Error al cambiar la contraseña.");
+        navigate("/admin");
       }
-    } catch {
-      setError("No se pudo conectar al servidor.");
+    } catch (err: any) {
+      setError(err.response?.data?.error || "No se pudo conectar al servidor.");
     } finally {
       setLoading(false);
     }
@@ -177,7 +162,7 @@ const CambioPassword: React.FC = () => {
               value={newPassword}
               onChange={e => { setNewPassword(e.target.value); setError(""); }}
               onKeyDown={handleKeyDown}
-              placeholder="Mínimo 6 caracteres"
+              placeholder="Mínimo 8 caracteres"
               style={inputStyle}
             />
             <button style={eyeBtn} onClick={() => setShowNew(v => !v)}>

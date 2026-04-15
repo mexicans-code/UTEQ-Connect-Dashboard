@@ -1,22 +1,11 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/Logs.css";
-import NavSpAdmin from "../components/NavSpAdmin";
-import { Eye, X, Shield, FileDown, RefreshCw } from "lucide-react";
+import "../../styles/tabla.css";
+import { Eye, X, Shield, RefreshCw } from "lucide-react";
 import { exportLogsPDF } from "../../utils/pdfExport";
-import api from "../../api/axios";
-
-interface Log {
-  _id: string;
-  nivel: 'info' | 'warn' | 'error';
-  evento: string;
-  metodo: string;
-  ruta: string;
-  statusCode: number;
-  ip: string;
-  userId?: string;
-  detalle?: string;
-  fecha: string;
-}
+import { getLogs, type Log } from "../../api/logs";
+import NavSidebar from "../components/NavSidebar";
+import PageTopbar from "../components/PageTopbar";
 
 const nivelColor: Record<string, string> = {
   info: '#38a169',
@@ -36,8 +25,8 @@ const Logs: React.FC = () => {
   const fetchLogs = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/logs');
-      setLogs(response.data.data);
+      const data = await getLogs();
+      setLogs(data);
     } catch (error) {
       console.error('Error cargando logs:', error);
     } finally {
@@ -54,42 +43,30 @@ const Logs: React.FC = () => {
 
   return (
     <div className="logs-container">
-      <NavSpAdmin />
+      <NavSidebar rol="superadmin" />
 
       <div className="logs-main">
-        <header className="logs-header" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <h1>Seguridad del Sistema</h1>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button
-              onClick={fetchLogs}
-              title="Recargar"
-              style={{
-                display: "flex", alignItems: "center", gap: 6,
-                padding: "9px 14px", borderRadius: "var(--radius-sm)",
-                background: "#3182ce", color: "#fff", border: "none",
-                cursor: "pointer", fontSize: "0.85rem", fontWeight: 600,
-              }}
-            >
-              <RefreshCw size={15} /> Recargar
-            </button>
-            <button
-              onClick={() => exportLogsPDF(logs)}
-              title="Descargar PDF"
-              style={{
-                display: "flex", alignItems: "center", gap: 6,
-                padding: "9px 14px", borderRadius: "var(--radius-sm)",
-                background: "#e53e3e", color: "#fff", border: "none",
-                cursor: "pointer", fontSize: "0.85rem", fontWeight: 600,
-              }}
-            >
-              <FileDown size={15} /> Descargar PDF
-            </button>
-          </div>
-        </header>
+        <PageTopbar
+          title="Seguridad del Sistema"
+          onDownloadPDF={() => exportLogsPDF(logs)}
+        >
+          <button data-action
+            onClick={fetchLogs}
+            title="Recargar"
+            style={{
+              display: "flex", alignItems: "center", gap: 6,
+              padding: "9px 14px", borderRadius: "var(--radius-sm)",
+              background: "#3182ce", color: "#fff", border: "none",
+              cursor: "pointer", fontSize: "0.85rem", fontWeight: 600,
+            }}
+          >
+            <RefreshCw size={15} /> Recargar
+          </button>
+        </PageTopbar>
 
         <div className="logs-content">
-          <div className="logs-table-wrapper">
-            <table className="logs-table">
+          <div className="ut-table-wrapper">
+            <table className="ut-table">
               <thead>
                 <tr>
                   <th>Evento</th>
@@ -114,7 +91,7 @@ const Logs: React.FC = () => {
                 ) : (
                   logs.map((log) => (
                     <tr key={log._id}>
-                      <td className="logs-descripcion">
+                      <td className="ut-cell-desc">
                         <Shield size={18} /> {log.evento}
                       </td>
                       <td>
@@ -131,8 +108,8 @@ const Logs: React.FC = () => {
                       </td>
                       <td>{formatFecha(log.fecha)}</td>
                       <td>
-                        <button
-                          className="logs-btn-detalle"
+                        <button data-action
+                          className="ut-btn-detail"
                           onClick={() => setLogSeleccionado(log)}
                         >
                           <Eye size={16} /> Ver detalles

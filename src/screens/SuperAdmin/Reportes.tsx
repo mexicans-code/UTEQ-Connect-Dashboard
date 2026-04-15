@@ -1,48 +1,39 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/Reportes.css";
-import NavSpAdmin from "../components/NavSpAdmin";
-import { Users, Map, Calendar, UserCheck, FileDown } from "lucide-react";
+import { Users, Map, Calendar, UserCheck } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
-import api from "../../api/axios";
+import { getReporteTotales, type ReporteTotales } from "../../api/reportes";
 import { exportReportesPDF } from "../../utils/pdfExport";
+import NavSidebar from "../components/NavSidebar";
+import PageTopbar from "../components/PageTopbar";
 
 const COLORS = ["#2563eb", "#16a34a", "#d97706", "#7c3aed"];
 
 const Reportes: React.FC = () => {
-  const [totales, setTotales] = useState({ usuarios: 0, edificios: 0, eventos: 0, eventosActivos: 0, eventosInactivos: 0, personal: 0 });
+  const [totales, setTotales] = useState<ReporteTotales>({
+    usuarios: 0, edificios: 0, eventos: 0,
+    eventosActivos: 0, eventosInactivos: 0, personal: 0,
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState("");
 
   useEffect(() => {
-    const fetch = async () => {
+    const cargar = async () => {
       setLoading(true); setError("");
       try {
-        const [rUsers, rLoc, rEv, rPersonal] = await Promise.all([
-          api.get("/users"),
-          api.get("/locations"),
-          api.get("/events"),
-          api.get("/personal"),
-        ]);
-
-        const usuarios  = (rUsers.data?.data    ?? rUsers.data    ?? []).length;
-        const edificios = (rLoc.data?.data      ?? rLoc.data      ?? []).length;
-        const personal  = (rPersonal.data?.data ?? rPersonal.data ?? []).length;
-        const eventos: any[] = rEv.data?.data ?? rEv.data ?? [];
-        const eventosActivos   = eventos.filter(e => e.activo).length;
-        const eventosInactivos = eventos.filter(e => !e.activo).length;
-
-        setTotales({ usuarios, edificios, eventos: eventos.length, eventosActivos, eventosInactivos, personal });
+        const datos = await getReporteTotales();
+        setTotales(datos);
       } catch { setError("Error al cargar datos del sistema."); }
       finally { setLoading(false); }
     };
-    fetch();
+    cargar();
   }, []);
 
   const dataGeneral = [
-    { name: "Usuarios",   total: totales.usuarios   },
-    { name: "Edificios",  total: totales.edificios  },
-    { name: "Eventos",    total: totales.eventos    },
-    { name: "Personal",   total: totales.personal   },
+    { name: "Usuarios",  total: totales.usuarios  },
+    { name: "Edificios", total: totales.edificios },
+    { name: "Eventos",   total: totales.eventos   },
+    { name: "Personal",  total: totales.personal  },
   ];
 
   const dataEventos = [
@@ -52,27 +43,21 @@ const Reportes: React.FC = () => {
 
   return (
     <div className="reportes-container">
-      <NavSpAdmin />
+      <NavSidebar rol="superadmin" />
+
       <div className="reportes-main">
-        <header className="reportes-header" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <h1>Monitoreo y Reportes del Sistema</h1>
-          {!loading && !error && (
-            <button
-              onClick={() => exportReportesPDF(totales)}
-              title="Descargar PDF"
-              style={{
-                display: "flex", alignItems: "center", gap: 6,
-                padding: "9px 14px", borderRadius: "var(--radius-sm)",
-                background: "#e53e3e", color: "#fff", border: "none",
-                cursor: "pointer", fontSize: "0.85rem", fontWeight: 600,
-              }}
-            >
-              <FileDown size={15} /> Descargar Reporte PDF
-            </button>
-          )}
-        </header>
+        <PageTopbar
+          title="Monitoreo y Reportes del Sistema"
+          showDownload={!loading && !error}
+          onDownloadPDF={() => exportReportesPDF(totales)}
+        />
+
         <div className="reportes-content">
-          {error && <p style={{ color: "var(--red-600)", background: "var(--red-50)", padding: "10px 14px", borderRadius: 8, marginBottom: 16, fontSize: "0.875rem" }}>{error}</p>}
+          {error && (
+            <p style={{ color: "var(--red-600)", background: "var(--red-50)", padding: "10px 14px", borderRadius: 8, marginBottom: 16, fontSize: "0.875rem" }}>
+              {error}
+            </p>
+          )}
 
           {loading ? (
             <p style={{ color: "var(--gray-400)", padding: 32, textAlign: "center" }}>Cargando reportes…</p>
@@ -80,10 +65,10 @@ const Reportes: React.FC = () => {
             <>
               <div className="reportes-cards">
                 {[
-                  { icon: <Users size={28}/>,     val: totales.usuarios,  label: "Usuarios Registrados"  },
-                  { icon: <Map size={28}/>,        val: totales.edificios, label: "Edificios y Rutas"     },
-                  { icon: <Calendar size={28}/>,   val: totales.eventos,   label: "Eventos Totales"       },
-                  { icon: <UserCheck size={28}/>,  val: totales.personal,  label: "Personal Registrado"   },
+                  { icon: <Users size={28}/>,    val: totales.usuarios,  label: "Usuarios Registrados" },
+                  { icon: <Map size={28}/>,       val: totales.edificios, label: "Edificios y Rutas"    },
+                  { icon: <Calendar size={28}/>,  val: totales.eventos,   label: "Eventos Totales"      },
+                  { icon: <UserCheck size={28}/>, val: totales.personal,  label: "Personal Registrado"  },
                 ].map(c => (
                   <div className="reportes-card" key={c.label}>
                     {c.icon}
