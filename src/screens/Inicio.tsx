@@ -212,8 +212,8 @@ const Inicio: React.FC = () => {
                     return(
                       <div key={ev._id} className="sp-evento-item">
                         <div className="sp-evento-fecha">
-                          <span className="sp-evento-dia">{new Date(ev.fecha+"T12:00:00").toLocaleDateString("es-MX",{day:"2-digit"})}</span>
-                          <span className="sp-evento-mes">{new Date(ev.fecha+"T12:00:00").toLocaleDateString("es-MX",{month:"short"})}</span>
+                          <span className="sp-evento-dia">{new Date(ev.fecha.slice(0,10)+"T12:00:00").toLocaleDateString("es-MX",{day:"2-digit"})}</span>
+                          <span className="sp-evento-mes">{new Date(ev.fecha.slice(0,10)+"T12:00:00").toLocaleDateString("es-MX",{month:"short"})}</span>
                         </div>
                         <div className="sp-evento-info">
                           <p className="sp-evento-titulo">{ev.titulo}{esHoy&&<span className="sp-badge-hoy">Hoy</span>}</p>
@@ -426,8 +426,8 @@ const Inicio: React.FC = () => {
                     return(
                       <div key={ev._id} className="adm-evento-item">
                         <div className="adm-evento-fecha">
-                          <span className="adm-evento-dia">{new Date(ev.fecha+"T12:00:00").toLocaleDateString("es-MX",{day:"2-digit"})}</span>
-                          <span className="adm-evento-mes">{new Date(ev.fecha+"T12:00:00").toLocaleDateString("es-MX",{month:"short"})}</span>
+                          <span className="adm-evento-dia">{new Date(ev.fecha.slice(0,10)+"T12:00:00").toLocaleDateString("es-MX",{day:"2-digit"})}</span>
+                          <span className="adm-evento-mes">{new Date(ev.fecha.slice(0,10)+"T12:00:00").toLocaleDateString("es-MX",{month:"short"})}</span>
                         </div>
                         <div className="adm-evento-info">
                           <p className="adm-evento-titulo">{ev.titulo}{esHoy&&<span className="adm-badge-hoy">Hoy</span>}</p>

@@ -12,7 +12,7 @@ import {
 import { useParams, useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 
 import { getEventos, type Evento } from "../api/events";
 import {
@@ -273,15 +273,16 @@ const InscritosEvento: React.FC = () => {
       inv.estadoAsistencia === "asistio" ? "Asistió" : inv.estadoAsistencia === "no_asistio" ? "No asistió" : "Pendiente",
     ]);
 
-    (doc as any).autoTable({
+    autoTable(doc, {
       head: [["#", "Nombre Completo", "Correo Electrónico", "Invitación", "Asistencia"]],
       body: tableData,
       startY: y,
       headStyles: { fillColor: BP, textColor: BW, fontStyle: "bold", fontSize: 8.5, cellPadding: 4 },
       bodyStyles: { textColor: BD, fontSize: 8, cellPadding: 3.5 },
-      alternateRowStyles: { fillColor: [248, 249, 252] },
+      alternateRowStyles: { fillColor: [248, 249, 252] as [number, number, number] },
       margin: { left: 14, right: 14 },
-      tableLineColor: [220, 225, 235], tableLineWidth: 0.2,
+      tableLineColor: [220, 225, 235] as [number, number, number],
+      tableLineWidth: 0.2,
       columnStyles: { 0: { cellWidth: 12 }, 1: { cellWidth: 55 }, 2: { cellWidth: 65 }, 3: { cellWidth: 28 }, 4: { cellWidth: 28 } },
     });
 

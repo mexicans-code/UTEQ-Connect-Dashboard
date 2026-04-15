@@ -76,6 +76,7 @@ const getTodayStr = () => {
 const toInputDate   = (iso: string) => iso ? iso.split("T")[0] : "";
 const formatFecha   = (iso: string) => !iso ? "—" : new Date(iso).toLocaleDateString("es-MX", { day:"2-digit", month:"short", year:"numeric", timeZone:"UTC" });
 const getNombreDest = (d: Destino | string | undefined) => !d ? "—" : typeof d === "string" ? d : d.nombre;
+const getNombreEsp  = (e: Evento["espacio"]) => !e ? "—" : typeof e === "string" ? e : (e as any).nombre || "—";
 const getDestinoId  = (d: Destino | string) => !d ? "" : typeof d === "string" ? d : d._id;
 const getSalaId     = (e: Evento["espacio"]) => !e ? "" : typeof e === "string" ? e : (e as any)._id;
 const toMin         = (h: string) => { const [hh,mm] = h.split(":").map(Number); return hh*60+mm; };
@@ -561,6 +562,7 @@ const Eventos: React.FC = () => {
                   <thead><tr>
                     <th>Evento</th><th style={{ width:"25%" }}>Descripción</th>
                     <th><MapPin size={12} style={{ verticalAlign:"middle" }} /> Lugar</th>
+                    <th>Espacio</th>
                     <th>Fecha</th>
                     <th><Clock size={12} style={{ verticalAlign:"middle" }} /> Horario</th>
                     <th><Users size={12} style={{ verticalAlign:"middle" }} /> Cupos</th>
@@ -578,6 +580,7 @@ const Eventos: React.FC = () => {
                               : <span style={{ color:"var(--gray-400)", fontStyle:"italic" }}>Sin descripción</span>}
                           </td>
                           <td><span className="ut-badge ut-badge--info">{getNombreDest(ev.destino)}</span></td>
+                          <td style={{ fontSize:"0.84rem", color:"var(--gray-600)" }}>{getNombreEsp(ev.espacio)}</td>
                           <td style={{ fontSize:"0.84rem", color:"var(--gray-600)", whiteSpace:"nowrap" }}>{formatFecha(ev.fecha)}</td>
                           <td style={{ fontSize:"0.84rem", color:"var(--gray-600)", whiteSpace:"nowrap" }}>{ev.horaInicio} – {ev.horaFin}</td>
                           <td><span className={`ut-badge ${pocos ? "ut-badge--lleno" : "ut-badge--info"}`}>{ev.cuposDisponibles}/{ev.cupos}</span></td>
@@ -647,7 +650,7 @@ const Eventos: React.FC = () => {
             <>
               <table className="ut-table">
                 <thead><tr>
-                  <th>Título</th><th><MapPin size={13} /> Lugar</th><th>Fecha</th>
+                  <th>Título</th><th><MapPin size={13} /> Lugar</th><th>Espacio</th><th>Fecha</th>
                   <th><Clock size={13} /> Horario</th><th><Users size={13} /> Cupos</th>
                   <th>Creado por</th><th>Estado</th><th>Acciones</th>
                 </tr></thead>
@@ -658,6 +661,7 @@ const Eventos: React.FC = () => {
                       <tr key={ev._id} style={{ opacity: puedeMod ? 1 : 0.6 }}>
                         <td style={{ fontWeight:600 }}>{ev.titulo}</td>
                         <td>{getNombreDest(ev.destino)}</td>
+                        <td style={{ fontSize:"0.82rem", color:"#6b7280" }}>{getNombreEsp(ev.espacio)}</td>
                         <td>{formatFecha(ev.fecha)}</td>
                         <td>{ev.horaInicio}–{ev.horaFin}</td>
                         <td>{ev.cuposDisponibles}/{ev.cupos}</td>
